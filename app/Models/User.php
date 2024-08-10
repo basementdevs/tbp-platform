@@ -29,6 +29,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         'name',
         'email',
         'password',
+        'is_admin',
     ];
 
     /**
@@ -38,8 +39,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
      */
     protected $hidden = [
         'password',
-        'remember_token',
-        'is_admin',
+        'remember_token'
     ];
 
     /**
@@ -58,7 +58,8 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return app()->isProduction() ? $this->is_admin : true;
+        return app()->isProduction()
+            ? request()->user()->is_admin : true;
     }
 
     public function getFilamentAvatarUrl(): ?string

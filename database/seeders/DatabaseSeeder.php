@@ -16,13 +16,5 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(OccupationSeeder::class);
-
-        if (app()->isLocal()) {
-            User::factory()->create([
-                'name' => 'Daniel Reis',
-                'email' => 'admin@admin.com',
-                'is_admin' => true
-            ]);
-        }
     }
 }

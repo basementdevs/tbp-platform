@@ -15,6 +15,9 @@ class Settings extends Model
         'user_id',
         'occupation_id',
         'pronouns',
+        'timezone',
+        'locale',
+        'is_developer',
     ];
 
     public function user(): BelongsTo

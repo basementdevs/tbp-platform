@@ -12,6 +12,9 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->foreignId('occupation_id')->constrained('occupations');
             $table->string('pronouns');
+            $table->string('timezone');
+            $table->string('locale');
+            $table->boolean('is_developer')->default(false);
             $table->timestamps();
         });
     }

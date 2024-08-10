@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use ChrisReedIO\Socialment\Exceptions\AbortedLoginException;
 use ChrisReedIO\Socialment\Facades\Socialment;
 use ChrisReedIO\Socialment\Models\ConnectedAccount;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -36,7 +37,7 @@ class OAuthController extends Controller
             'expires_at' => $tokenExpiration,
         ]);
 
-        if (! $connectedAccount->exists) {
+        if (!$connectedAccount->exists) {
             // Check for an existing user with this email
             // Create a new user if one doesn't exist
             $user = Socialment::createUser($connectedAccount);
@@ -65,12 +66,11 @@ class OAuthController extends Controller
             ->createToken('authToken', ['*'], $tokenExpiration)
             ->plainTextToken;
 
-
         return response()->json([
             'access_token' => $accessToken,
             'token_type' => 'Bearer',
             'expires_at' => $tokenExpiration,
-            'user' => $connectedAccount->user->load(['accounts', 'settings']),
+            'user' => $connectedAccount->user->load(['settings' => fn($query) => $query->with('occupation'), 'accounts']),
         ]);
     }
 }

@@ -18,10 +18,9 @@ class OAuthController extends Controller
             ->stateless()
             ->user();
 
-        $tokenExpiration = match ($provider) {
-            'azure' => now()->addSeconds($socialUser->expiresIn),
-            default => null,
-        };
+        $tokenExpiration = $socialUser->expiresIn
+            ? now()->addSeconds($socialUser->expiresIn)
+            : null;
 
         // Create a user or log them in...
         $connectedAccount = ConnectedAccount::firstOrNew([
@@ -63,15 +62,15 @@ class OAuthController extends Controller
         // AccessToken
         $accessToken = $connectedAccount
             ->user
-            ->createToken('authToken', ['*'], now()->addWeek())
+            ->createToken('authToken', ['*'], $tokenExpiration)
             ->plainTextToken;
 
 
         return response()->json([
             'access_token' => $accessToken,
             'token_type' => 'Bearer',
-            'expires_at' => now()->addWeek(),
-            'user' => $connectedAccount->user,
+            'expires_at' => $tokenExpiration,
+            'user' => $connectedAccount->user->load(['accounts', 'settings']),
         ]);
     }
 }

@@ -13,4 +13,8 @@ Route::get('/user', function (Request $request) {
 Route::prefix('v1')->group(function () {
     Route::get('/occupations', [OccupationsController::class, 'getOccupationsList']);
     Route::post('/authenticate/{provider}', [OAuthController::class, 'authenticateWithOAuth']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::put('/me/update-settings', [OAuthController::class, 'getUser']);
+    });
 });

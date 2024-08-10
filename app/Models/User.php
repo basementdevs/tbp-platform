@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Settings\Settings;
 use App\Observers\UserObserver;
 use ChrisReedIO\Socialment\Models\ConnectedAccount;
 use Filament\Models\Contracts\FilamentUser;
@@ -11,6 +12,7 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -77,5 +79,10 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     public function accounts(): HasMany
     {
         return $this->hasMany(ConnectedAccount::class);
+    }
+
+    public function settings(): HasOne
+    {
+        return $this->hasOne(Settings::class);
     }
 }

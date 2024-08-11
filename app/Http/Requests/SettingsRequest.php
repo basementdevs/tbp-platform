@@ -9,10 +9,14 @@ class SettingsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id' => ['required', 'exists:users'],
-            'occupation_id' => ['required', 'exists:occupations'],
+            'occupation_id' => ['required', 'exists:occupations,id'],
             'pronouns' => ['required', 'string'],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge(['user_id' => $this->user()->id]);
     }
 
     public function authorize(): bool

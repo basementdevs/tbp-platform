@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use ChrisReedIO\Socialment\Exceptions\AbortedLoginException;
 use ChrisReedIO\Socialment\Facades\Socialment;
 use ChrisReedIO\Socialment\Models\ConnectedAccount;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Laravel\Socialite\Facades\Socialite;
 

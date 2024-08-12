@@ -34,6 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'consumer-api' => [
+        'base_uri' => env('TBP_CONSUMER_API_BASE_URI'),
+        'secret' => env('TBP_CONSUMER_API_SECRET'),
+    ],
     'twitch' => [
         'client_id' => env('TWITCH_CLIENT_ID'),
         'client_secret' => env('TWITCH_CLIENT_SECRET'),

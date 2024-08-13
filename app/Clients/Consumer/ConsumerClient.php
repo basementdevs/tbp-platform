@@ -11,6 +11,8 @@ class ConsumerClient
 {
     private Client $client;
 
+    private string $baseVersionedUrl = '/api/v1';
+
     public function __construct()
     {
         $this->client = new Client([
@@ -24,7 +26,7 @@ class ConsumerClient
 
     public function updateUser(User $user): void
     {
-        $uri = '/settings';
+        $uri = $this->baseVersionedUrl . '/settings';
 
         /** @var ConnectedAccount $account */
         $account = $user->accounts()->where('provider', 'twitch')->first();

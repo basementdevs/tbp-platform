@@ -32,22 +32,22 @@ class OccupationResource extends Resource
                 TextInput::make('name')
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
+                    ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state))),
 
                 TextInput::make('slug')
                     ->disabled()
                     ->required()
-                    ->unique(Occupation::class, 'slug', fn($record) => $record),
+                    ->unique(Occupation::class, 'slug', fn ($record) => $record),
 
                 TextInput::make('translation_key')
                     ->required(),
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Occupation $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Occupation $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Occupation $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Occupation $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
             ]);
     }
 

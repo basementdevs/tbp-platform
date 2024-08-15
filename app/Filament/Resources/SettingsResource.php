@@ -29,11 +29,11 @@ class SettingsResource extends Resource
             ->schema([
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn(?Settings $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Settings $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn(?Settings $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn (?Settings $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
 
                 TextInput::make('user_id')
                     ->required()

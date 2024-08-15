@@ -10,10 +10,10 @@ class Occupation extends Model
 
     public function getImageUrlAttribute(): string
     {
-        return asset(sprintf("storage/icons/%s.png", $this->slug));
+        return asset(sprintf('storage/icons/%s.png', $this->slug));
     }
 
     protected $appends = [
-        'image_url'
+        'image_url',
     ];
 }

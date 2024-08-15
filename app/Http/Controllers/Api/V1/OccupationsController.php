@@ -11,7 +11,7 @@ class OccupationsController extends Controller
     public function getOccupationsList(): JsonResponse
     {
         $ttl = 60 * 60; // 1 hour
-        $cachedOccupations = cache()->remember('occupations', $ttl , function () {
+        $cachedOccupations = cache()->remember('occupations', $ttl, function () {
             return Occupation::query()->select(['id', 'name', 'slug', 'translation_key'])->get();
         });
 

@@ -20,7 +20,7 @@ use Laravel\Sanctum\HasApiTokens;
 #[ObservedBy(UserObserver::class)]
 class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    use HasFactory, Notifiable, HasApiTokens;
+    use HasApiTokens, HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -41,7 +41,7 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
      */
     protected $hidden = [
         'password',
-        'remember_token'
+        'remember_token',
     ];
 
     /**
@@ -68,12 +68,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
     {
 
         $cachedAvatar = cache()->remember("user-{$this->id}-avatar", now()->addMinutes(5), function () {
-            $twitchUser = $this->accounts()->where('provider', '=' , 'twitch')->first();
+            $twitchUser = $this->accounts()->where('provider', '=', 'twitch')->first();
 
             return $twitchUser?->avatar;
         });
 
-        return $cachedAvatar ?? 'https://www.gravatar.com/avatar/' . md5(strtolower(trim($this->email)));
+        return $cachedAvatar ?? 'https://www.gravatar.com/avatar/'.md5(strtolower(trim($this->email)));
     }
 
     public function accounts(): HasMany

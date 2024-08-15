@@ -7,7 +7,7 @@ class EventServiceProvider extends \Illuminate\Foundation\Support\Providers\Even
     protected $listen = [
         \SocialiteProviders\Manager\SocialiteWasCalled::class => [
             // ... other providers
-            \SocialiteProviders\Twitch\TwitchExtendSocialite::class . '@handle',
+            \SocialiteProviders\Twitch\TwitchExtendSocialite::class.'@handle',
         ],
     ];
 }

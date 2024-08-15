@@ -19,14 +19,14 @@ class ConsumerClient
             'base_uri' => config('services.consumer-api.base_uri'),
             'headers' => [
                 'Accept' => 'application/json',
-                'X-Authorization' => config('services.consumer-api.secret')
-            ]
+                'X-Authorization' => config('services.consumer-api.secret'),
+            ],
         ]);
     }
 
     public function updateUser(User $user): void
     {
-        $uri = $this->baseVersionedUrl . '/settings';
+        $uri = $this->baseVersionedUrl.'/settings';
 
         /** @var ConnectedAccount $account */
         $account = $user->accounts()->where('provider', 'twitch')->first();
@@ -34,17 +34,17 @@ class ConsumerClient
         $settings = $user->settings;
 
         $payload = [
-            'user_id' => (int)$account->provider_user_id,
+            'user_id' => (int) $account->provider_user_id,
             'locale' => $settings->locale,
             'occupation' => [
                 'name' => $settings->occupation->name,
                 'translation_key' => $settings->occupation->translation_key,
                 'slug' => $settings->occupation->slug,
             ],
-            'pronouns' => config('extension.pronouns.' . $settings->pronouns),
+            'pronouns' => config('extension.pronouns.'.$settings->pronouns),
             'timezone' => $settings->timezone,
             'username' => $account->nickname,
-            'is_developer' => (bool) $user->is_admin
+            'is_developer' => (bool) $user->is_admin,
         ];
 
         $response = $this->client->put($uri, ['json' => $payload]);

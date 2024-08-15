@@ -4,9 +4,7 @@ namespace Tests\Feature\Http\Controllers\Api\V1;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Tests\TestCase;
-
 
 class AuthenticatedUserControllerTest extends TestCase
 {

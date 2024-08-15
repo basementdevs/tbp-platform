@@ -9,7 +9,7 @@ class OccupationSeeder extends Seeder
 {
     public function run(): void
     {
-        foreach(config('extension.occupations') as $occupation) {
+        foreach (config('extension.occupations') as $occupation) {
             Occupation::create($occupation);
         }
     }

@@ -10,9 +10,7 @@ use Illuminate\Http\JsonResponse;
 
 class AuthenticatedUserController extends Controller
 {
-    public function __construct(private ConsumerClient $client)
-    {
-    }
+    public function __construct(private ConsumerClient $client) {}
 
     public function putSettings(SettingsRequest $request): JsonResponse
     {
@@ -24,6 +22,7 @@ class AuthenticatedUserController extends Controller
         $this->client->updateUser($request->user()->refresh());
 
         $response = $userSettings->with('occupation')->first();
+
         return response()->json($response);
     }
 }

@@ -45,7 +45,7 @@ class AdminPanelProvider extends PanelProvider
                         shouldRegisterNavigation: true, // Adds a main navigation item for the My Profile page (default = false)
                         navigationGroup: 'Settings', // Sets the navigation group for the My Profile page (default = null)e)
                         slug: 'profile' // Sets the slug for the profile page (default = 'my-profile')
-                    )
+                    ),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')
             ->widgets([

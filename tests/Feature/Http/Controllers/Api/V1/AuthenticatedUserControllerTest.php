@@ -38,7 +38,7 @@ class AuthenticatedUserControllerTest extends TestCase
         $payload = [
             'user_id' => $user->id,
             'occupation_id' => 2,
-            'pronouns' => config('extension.pronouns.She/Her.name'),
+            'pronouns' => 'she-her',
         ];
 
         // Act
@@ -47,10 +47,16 @@ class AuthenticatedUserControllerTest extends TestCase
             ->putJson(route('auth.update-settings'), $payload);
 
         // Assert
+        $payload['pronouns'] = config('extension.pronouns.' . $payload['pronouns']);
         $response->assertOk()
             ->assertJsonFragment($payload)
-            ->assertJsonStructure(['occupation' => ['id']]);
+            ->assertJsonStructure(['occupation' => ['id']])
+            ->assertJsonStructure(['pronouns' => ['name', 'slug', 'translation_key']]);
 
-        $this->assertDatabaseHas('settings', $payload);
+        $this->assertDatabaseHas('settings', [
+            'user_id' => $user->id,
+            'occupation_id' => $payload['occupation_id'],
+            'pronouns' => 'she-her',
+        ]);
     }
 }

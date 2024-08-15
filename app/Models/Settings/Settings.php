@@ -20,6 +20,14 @@ class Settings extends Model
         'is_developer',
     ];
 
+    protected $casts = [
+        'is_developer' => 'boolean'
+    ];
+
+    public function getPronounsAttribute() {
+        return config('extension.pronouns.' . $this->attributes['pronouns']);
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

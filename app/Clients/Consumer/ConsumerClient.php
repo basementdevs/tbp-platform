@@ -41,7 +41,7 @@ class ConsumerClient
                 'translation_key' => $settings->occupation->translation_key,
                 'slug' => $settings->occupation->slug,
             ],
-            'pronouns' => config('extension.pronouns.'.$settings->pronouns),
+            'pronouns' => $settings->pronouns,
             'timezone' => $settings->timezone,
             'username' => $account->nickname,
             'is_developer' => (bool) $user->is_admin,

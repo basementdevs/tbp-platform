@@ -2,77 +2,77 @@
 
 return [
     'pronouns' => [
-        'n/d' => [
+        'none' => [
             'name' => 'n/d',
             'translation_key' => 'None',
             'slug' => 'none',
         ],
-        'He/Him' => [
+        'he-him' => [
             'name' => 'He/Him',
             'translation_key' => 'HeHim',
             'slug' => 'he-him',
         ],
-        'She/Her' => [
+        'she-her' => [
             'name' => 'She/Her',
             'translation_key' => 'SheHer',
             'slug' => 'she-her',
         ],
-        'They/Them' => [
+        'they-them' => [
             'name' => 'They/Them',
             'translation_key' => 'TheyThem',
             'slug' => 'they-them',
         ],
-        'She/They' => [
+        'she-they' => [
             'name' => 'She/They',
             'translation_key' => 'SheThey',
             'slug' => 'she-they',
         ],
-        'He/They' => [
+        'he-they' => [
             'name' => 'He/They',
             'translation_key' => 'HeThey',
             'slug' => 'he-they',
         ],
-        'He/She' => [
+        'he-she' => [
             'name' => 'He/She',
             'translation_key' => 'HeShe',
             'slug' => 'he-she',
         ],
-        'Xe/Xem' => [
+        'xe-xem' => [
             'name' => 'Xe/Xem',
             'translation_key' => 'XeXem',
             'slug' => 'xe-xem',
         ],
-        'It/Its' => [
+        'it-its' => [
             'name' => 'It/Its',
             'translation_key' => 'ItIts',
             'slug' => 'it-its',
         ],
-        'Fae/Faer' => [
+        'fae-faer' => [
             'name' => 'Fae/Faer',
             'translation_key' => 'FaeFaer',
             'slug' => 'fae-faer',
         ],
-        'Ve/Ver' => [
+        've-ver' => [
             'name' => 'Ve/Ver',
             'translation_key' => 'VeVer',
             'slug' => 've-ver',
         ],
-        'Ae/Aer' => [
+        'ae-aer' => [
             'name' => 'Ae/Aer',
             'translation_key' => 'AeAer',
             'slug' => 'ae-aer',
         ],
-        'Zie/Hir' => [
+        'zie-hir' => [
             'name' => 'Zie/Hir',
             'translation_key' => 'ZieHir',
             'slug' => 'zie-hir',
         ],
-        'Per/Per' => [
+        'per-per' => [
             'name' => 'Per/Per',
             'translation_key' => 'PerPer',
             'slug' => 'per-per',
         ],
-        'E/Em' => [
+        'e-em' => [
             'name' => 'E/Em',
             'translation_key' => 'EEm',
             'slug' => 'e-em',

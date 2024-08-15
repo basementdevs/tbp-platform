@@ -18,6 +18,7 @@ class UserObserver
             'pronouns' => 'n/d', // none
             'timezone' => request()->input('timezone', 'UTC'),
             'locale' => request()->input('locale', 'pt-BR'),
+            'is_developer' => false,
         ]);
     }
 }

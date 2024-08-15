@@ -13,7 +13,6 @@ class OAuthController extends Controller
 {
     public function authenticateWithOAuth(Request $request, string $provider)
     {
-        \Log::alert('Provider: ' . $provider, $request->all());
         $socialUser = Socialite::driver($provider)
             ->stateless()
             ->user();

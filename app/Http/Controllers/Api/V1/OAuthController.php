@@ -65,9 +65,11 @@ class OAuthController extends Controller
             ->plainTextToken;
 
         return response()->json([
-            'access_token' => $accessToken,
-            'token_type' => 'Bearer',
-            'expires_at' => $tokenExpiration,
+            'authorization' => [
+                'access_token' => $accessToken,
+                'token_type' => 'Bearer',
+                'expires_at' => $tokenExpiration,
+            ],
             'user' => $connectedAccount->user->load(['settings' => fn($query) => $query->with('occupation'), 'accounts']),
         ]);
     }

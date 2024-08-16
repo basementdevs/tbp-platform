@@ -3,7 +3,7 @@
 return [
     'pronouns' => [
         'none' => [
-            'name' => 'n/d',
+            'name' => 'None',
             'translation_key' => 'None',
             'slug' => 'none',
         ],

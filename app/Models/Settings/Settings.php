@@ -21,11 +21,12 @@ class Settings extends Model
     ];
 
     protected $casts = [
-        'is_developer' => 'boolean'
+        'is_developer' => 'boolean',
     ];
 
-    public function getPronounsAttribute() {
-        return config('extension.pronouns.' . $this->attributes['pronouns']);
+    public function getPronounsAttribute(): array
+    {
+        return config('extension.pronouns.'.$this->attributes['pronouns']);
     }
 
     public function user(): BelongsTo

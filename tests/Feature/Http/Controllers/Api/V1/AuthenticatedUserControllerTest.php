@@ -47,7 +47,7 @@ class AuthenticatedUserControllerTest extends TestCase
             ->putJson(route('auth.update-settings'), $payload);
 
         // Assert
-        $payload['pronouns'] = config('extension.pronouns.' . $payload['pronouns']);
+        $payload['pronouns'] = config('extension.pronouns.'.$payload['pronouns']);
         $response->assertOk()
             ->assertJsonFragment($payload)
             ->assertJsonStructure(['occupation' => ['id']])

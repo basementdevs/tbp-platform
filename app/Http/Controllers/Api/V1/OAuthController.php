@@ -21,6 +21,7 @@ class OAuthController extends Controller
             ? now()->addSeconds($socialUser->expiresIn)
             : null;
 
+
         // Create a user or log them in...
         $connectedAccount = ConnectedAccount::firstOrNew([
             'provider' => $provider,

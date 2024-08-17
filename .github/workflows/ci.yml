@@ -1,0 +1,71 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: 8.3
+  PHP_EXTENSIONS: mbstring,pdo,xml,ctype,fileinfo,json,curl,openssl,dom,zip
+  PHP_INI_PROPERTIES: post_max_size=256M,upload_max_filesize=256M
+
+jobs:
+  setup:
+    name: Setup PHP
+    runs-on: ubuntu-24.04
+    outputs:
+      combined-key: ${{ steps.prepare-env.outputs.combined-key }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Prepare environment and composer data
+        id: prepare-env
+        run: |
+          composer_dir=$(composer config cache-files-dir)
+          composer_hash=${{ hashFiles('**/composer.lock') }}
+          os_lower=$(echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]')
+          arch_lower=$(echo ${{ runner.arch }} | tr '[:upper:]' '[:lower:]')
+          combined_key="${os_lower}-${arch_lower}-composer-${composer_hash}"
+          echo "combined-key=${combined_key}" >> "$GITHUB_OUTPUT"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          ini-values: ${{ env.PHP_INI_PROPERTIES }}
+      - name: Install composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "--optimize-autoloader --prefer-dist"
+          custom-cache-key: ${{ steps.prepare-env.outputs.combined-key }}
+  lint:
+    name: Perform lint
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          ini-values: ${{ env.PHP_INI_PROPERTIES }}
+      - name: Install composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "--optimize-autoloader --prefer-dist"
+          custom-cache-key: ${{ needs.setup.outputs.combined-key }}
+      - name: Run Pint
+        run: ./vendor/bin/pint --no-interaction --test --preset=laravel

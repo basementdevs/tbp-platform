@@ -10,6 +10,12 @@ on:
       - main
       - develop
   workflow_dispatch:
+    inputs:
+      coverage:
+        description: 'Run with coverage tests'
+        required: false
+        default: false
+        type: boolean
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
@@ -124,14 +130,21 @@ jobs:
       - name: Prepare the application
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan config:clear
           php artisan key:generate
       - name: Run Migration
         run: php artisan migrate --seed -v
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
-      - name: Run feature tests
+      - name: Run tests
         run: php artisan test
+        env:
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+      - name: Run coverage tests
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.coverage }}
+        run: php artisan test --coverage --min=90
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}

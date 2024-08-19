@@ -1,0 +1,150 @@
+name: Continuous Integration
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      coverage:
+        description: 'Run with coverage tests'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PHP_VERSION: 8.3
+  PHP_EXTENSIONS: mbstring,pdo,xml,ctype,fileinfo,json,curl,openssl,dom,zip
+  PHP_INI_PROPERTIES: post_max_size=256M,upload_max_filesize=256M
+
+jobs:
+  setup:
+    name: Setup PHP
+    runs-on: ubuntu-24.04
+    outputs:
+      combined-key: ${{ steps.prepare-env.outputs.combined-key }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Prepare environment and composer data
+        id: prepare-env
+        run: |
+          composer_dir=$(composer config cache-files-dir)
+          composer_hash=${{ hashFiles('**/composer.lock') }}
+          os_lower=$(echo ${{ runner.os }} | tr '[:upper:]' '[:lower:]')
+          arch_lower=$(echo ${{ runner.arch }} | tr '[:upper:]' '[:lower:]')
+          combined_key="${os_lower}-${arch_lower}-composer-${composer_hash}"
+          echo "combined-key=${combined_key}" >> "$GITHUB_OUTPUT"
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          ini-values: ${{ env.PHP_INI_PROPERTIES }}
+      - name: Install composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "--optimize-autoloader --prefer-dist"
+          custom-cache-key: ${{ steps.prepare-env.outputs.combined-key }}
+  lint:
+    name: Perform lint
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          ini-values: ${{ env.PHP_INI_PROPERTIES }}
+      - name: Install composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "--optimize-autoloader --prefer-dist"
+          custom-cache-key: ${{ needs.setup.outputs.combined-key }}
+      - name: Run Pint
+        run: ./vendor/bin/pint --no-interaction --test --preset=laravel
+  tests:
+    name: Run tests
+    runs-on: ubuntu-24.04
+    needs: setup
+    env:
+      BROADCAST_DRIVER: log
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+      DB_CONNECTION: pgsql
+      DB_HOST: localhost
+      DB_PASSWORD: postgres
+      DB_USERNAME: postgres
+      DB_DATABASE: postgres
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: app
+        ports:
+          - 5432/tcp
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis
+        ports:
+          - 6379/tcp
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          ini-values: ${{ env.PHP_INI_PROPERTIES }}
+          coverage: 'xdebug'
+      - name: Install composer dependencies
+        uses: "ramsey/composer-install@v3"
+        with:
+          composer-options: "--optimize-autoloader --prefer-dist"
+          custom-cache-key: ${{ needs.setup.outputs.combined-key }}
+      - name: Prepare the application
+        run: |
+          php -r "file_exists('.env') || copy('.env.example', '.env');"
+          php artisan config:clear
+          php artisan key:generate
+      - name: Run Migration
+        run: php artisan migrate --seed -v
+        env:
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+      - name: Run tests
+        run: php artisan test
+        env:
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+      - name: Run coverage tests
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.coverage }}
+        run: php artisan test --coverage --min=90
+        env:
+          DB_PORT: ${{ job.services.postgres.ports['5432'] }}
+          REDIS_PORT: ${{ job.services.redis.ports['6379'] }}

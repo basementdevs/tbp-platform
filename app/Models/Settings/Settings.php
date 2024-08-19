@@ -24,6 +24,7 @@ class Settings extends Model
         'is_developer' => 'boolean',
     ];
 
+
     public function getPronounsAttribute(): array
     {
         return config('extension.pronouns.'.$this->attributes['pronouns']);

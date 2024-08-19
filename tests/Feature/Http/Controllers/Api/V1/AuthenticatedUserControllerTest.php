@@ -2,13 +2,14 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
+use App\Clients\Consumer\ConsumerClient;
 use App\Models\User;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
 class AuthenticatedUserControllerTest extends TestCase
 {
-    use DatabaseMigrations;
+    use RefreshDatabase;
 
     protected function setUp(): void
     {
@@ -19,8 +20,19 @@ class AuthenticatedUserControllerTest extends TestCase
     {
         // Arrange
         $this->artisan('db:seed');
-        $user = User::factory()
-            ->create();
+        $user = User::factory()->create();
+
+        /**
+         * I don't think the right way would be to run a docker compose with
+         * the Rust + ScyllaDB (and also Postgres, Redis) just to run the tests,
+         * at the same time I'm not a php dev, so there may well be a better solution for this.
+         */
+        $this->partialMock(ConsumerClient::class, function ($mock) use ($user) {
+            $mock->shouldReceive('updateUser')
+                ->once()
+                ->with($user)
+                ->andReturn(true);
+        });
 
         $user->accounts()->create([
             'provider' => 'twitch',
@@ -47,7 +59,7 @@ class AuthenticatedUserControllerTest extends TestCase
             ->putJson(route('auth.update-settings'), $payload);
 
         // Assert
-        $payload['pronouns'] = config('extension.pronouns.' . $payload['pronouns']);
+        $payload['pronouns'] = config('extension.pronouns.'.$payload['pronouns']);
         $response->assertOk()
             ->assertJsonFragment($payload)
             ->assertJsonStructure(['occupation' => ['id']])

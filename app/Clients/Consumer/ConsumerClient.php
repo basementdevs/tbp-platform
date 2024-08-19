@@ -2,6 +2,7 @@
 
 namespace App\Clients\Consumer;
 
+use App\Clients\Consumer\DTO\UserTokenDTO;
 use App\Models\Settings\Settings;
 use App\Models\User;
 use ChrisReedIO\Socialment\Models\ConnectedAccount;
@@ -51,6 +52,24 @@ class ConsumerClient
 
         if ($response->getStatusCode() !== 200) {
             throw new ConsumerClientException('Failed to update user settings');
+        }
+    }
+
+    public function sendUserToken(UserTokenDTO $tokenDTO): void
+    {
+        $uri = $this->baseVersionedUrl.'/authenticate';
+
+        $payload = [
+            'user_id' => $tokenDTO->userId,
+            'token' => $tokenDTO->authDTO->accessToken,
+        ];
+
+        $response = $this->client->post($uri, [
+            'json' => $payload,
+        ]);
+
+        if ($response->getStatusCode() !== 201) {
+            throw new ConsumerClientException('Failed to send user token');
         }
     }
 }

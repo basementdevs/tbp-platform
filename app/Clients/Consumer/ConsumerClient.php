@@ -32,7 +32,7 @@ class ConsumerClient
         /** @var ConnectedAccount $account */
         $account = $user->accounts()->where('provider', 'twitch')->first();
         /** @var Settings $settings */
-        $settings = $user->settings;
+        $settings = $user->settings()->with(['occupation', 'effect', 'color'])->first();
 
         $payload = [
             'user_id' => (int) $account->provider_user_id,
@@ -41,6 +41,19 @@ class ConsumerClient
                 'name' => $settings->occupation->name,
                 'translation_key' => $settings->occupation->translation_key,
                 'slug' => $settings->occupation->slug,
+            ],
+            'effect' => [
+                'name' => $settings->effect->name,
+                'translation_key' => $settings->effect->translation_key,
+                'slug' => $settings->effect->slug,
+                'class_name' => $settings->effect->class_name,
+                'hex' => $settings->effect->hex,
+            ],
+            'color' => [
+                'name' => $settings->color->name,
+                'translation_key' => $settings->color->translation_key,
+                'slug' => $settings->color->slug,
+                'hex' => $settings->color->hex,
             ],
             'pronouns' => $settings->pronouns,
             'timezone' => $settings->timezone,

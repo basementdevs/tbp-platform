@@ -21,7 +21,7 @@ class AuthenticatedUserController extends Controller
         /** @var Settings $response */
         $this->client->updateUser($request->user()->refresh());
 
-        $response = $userSettings->with('occupation')->first();
+        $response = $userSettings->with(['occupation', 'color', 'effect'])->first();
 
         return response()->json($response);
     }

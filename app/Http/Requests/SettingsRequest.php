@@ -14,7 +14,7 @@ class SettingsRequest extends FormRequest
             'occupation_id' => ['exists:occupations,id'],
             'color_id' => ['exists:settings_colors,id'],
             'effect_id' => ['exists:settings_effects,id'],
-            'pronouns' => ['string', 'in:' . $acceptedPronouns],
+            'pronouns' => ['string', 'in:'.$acceptedPronouns],
         ];
     }
 

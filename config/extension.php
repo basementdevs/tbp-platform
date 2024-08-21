@@ -130,4 +130,52 @@ return [
             'translation_key' => 'UxUiDesigner',
         ],
     ],
+    'colors' => [
+        'none' => [
+            'name' => 'None',
+            'slug' => 'none',
+            'translation_key' => 'None',
+            'hex' => '#000',
+        ],
+        'brown' => [
+            'name' => 'Brown',
+            'slug' => 'brown',
+            'translation_key' => 'Brown',
+            'hex' => '#8B4513',
+        ],
+        'crimson' => [
+            'name' => 'Crimson',
+            'slug' => 'crimson',
+            'translation_key' => 'Crimson',
+            'hex' => '#DC143C',
+        ],
+        'purple' => [
+            'name' => 'Purple',
+            'slug' => 'purple',
+            'translation_key' => 'Purple',
+            'hex' => '#800080',
+        ],
+        'royal-blue' => [
+            'name' => 'Royal Blue',
+            'slug' => 'royal-blue',
+            'translation_key' => 'RoyalBlue',
+            'hex' => '#4169E1',
+        ],
+    ],
+    'effects' => [
+        'none' => [
+            'name' => 'None',
+            'slug' => 'none',
+            'translation_key' => 'None',
+            'hex' => null,
+            'class_name' => 'none',
+        ],
+        'glow-purple' => [
+            'name' => 'Glow Purple',
+            'slug' => 'glow-purple',
+            'translation_key' => 'GlowPurple',
+            'class_name' => 'glow-purple',
+            'hex' => '#FFD700',
+        ],
+    ],
 ];

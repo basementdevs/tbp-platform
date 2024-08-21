@@ -29,7 +29,6 @@ class OAuthController extends Controller
         ));
 
         return response()->json($response);
-
     }
 
     public function registerAndAuthenticate(string $provider, $socialUser): AuthenticationDTO
@@ -82,7 +81,7 @@ class OAuthController extends Controller
                 ->createToken('authToken', ['*'], $tokenExpiration)
                 ->plainTextToken;
 
-            $user = $connectedAccount->user()->with(['settings.occupation', 'accounts'])->first();
+            $user = $connectedAccount->user()->with(['settings.occupation', 'settings.color', 'settings.effect', 'accounts'])->first();
 
             return AuthenticationDTO::factory(
                 AuthorizationDTO::factory($accessToken, $tokenExpiration),

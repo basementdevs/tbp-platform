@@ -15,6 +15,8 @@ class UserObserver
 
         $user->settings()->create([
             'occupation_id' => 1, // none
+            'color_id' => 1, // none
+            'effect_id' => 1, // none
             'pronouns' => 'none', // none
             'timezone' => request()->input('timezone', 'UTC'),
             'locale' => request()->input('locale', 'pt-BR'),

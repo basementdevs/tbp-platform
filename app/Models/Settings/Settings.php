@@ -13,6 +13,8 @@ class Settings extends Model
 
     protected $fillable = [
         'user_id',
+        'color_id',
+        'effect_id',
         'occupation_id',
         'pronouns',
         'timezone',
@@ -37,5 +39,15 @@ class Settings extends Model
     public function occupation(): BelongsTo
     {
         return $this->belongsTo(Occupation::class);
+    }
+
+    public function color(): BelongsTo
+    {
+        return $this->belongsTo(Color::class);
+    }
+
+    public function effect(): BelongsTo
+    {
+        return $this->belongsTo(Effect::class);
     }
 }

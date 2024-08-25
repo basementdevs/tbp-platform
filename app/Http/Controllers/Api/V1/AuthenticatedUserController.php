@@ -43,7 +43,7 @@ class AuthenticatedUserController extends Controller
                 'channel_id' => $validatedSettings['channel_id'],
             ], $validatedSettings);
 
-        /** @var User $response */
+        /** @var User $user */
         $user = $request
             ->user()
             ->refresh()
@@ -52,7 +52,6 @@ class AuthenticatedUserController extends Controller
 
 
         $settings = $user->settings->first(fn (Settings $settings) => $settings->channel_id == $validatedSettings['channel_id']);
-
 
         $this->client->updateUser($user, $settings);
 

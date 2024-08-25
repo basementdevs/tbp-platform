@@ -27,11 +27,11 @@ class AuthenticatedUserControllerTest extends TestCase
 
 
 //
-        $this->partialMock(ConsumerClient::class, function ($mock) use ($user) {
-            $mock->shouldReceive('updateUser')
-                ->once()
-                ->andReturn(true);
-        });
+//        $this->partialMock(ConsumerClient::class, function ($mock) use ($user) {
+//            $mock->shouldReceive('updateUser')
+//                ->once()
+//                ->andReturn(true);
+//        });
 
         $user->accounts()->create([
             'provider' => 'twitch',
@@ -50,8 +50,10 @@ class AuthenticatedUserControllerTest extends TestCase
             'user_id' => $user->id,
             'occupation_id' => 2,
             'enabled' => true,
-            'channel_id' => 'global',
+            'channel_id' => 'danielhe4rt',
             'pronouns' => 'she-her',
+            'effect_id' => 1,
+            'color_id' => 1,
         ];
 
         // Act

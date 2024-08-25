@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Occupation extends Model
 {
     use HasFactory;
+
     protected $fillable = ['name', 'slug', 'translation_key'];
 
     public function getImageUrlAttribute(): string

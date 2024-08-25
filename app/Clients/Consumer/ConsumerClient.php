@@ -25,18 +25,18 @@ class ConsumerClient
         ]);
     }
 
-    public function updateUser(User $user): void
+    public function updateUser(User $user, Settings $settings): void
     {
         $uri = $this->baseVersionedUrl.'/settings';
 
         /** @var ConnectedAccount $account */
-        $account = $user->accounts()->where('provider', 'twitch')->first();
-        /** @var Settings $settings */
-        $settings = $user->settings()->with(['occupation', 'effect', 'color'])->first();
+        $account = $user->accounts->first(fn ($account) => $account->provider == 'twitch');
 
         $payload = [
             'user_id' => (int) $account->provider_user_id,
             'locale' => $settings->locale,
+            'enabled' => $settings->enabled,
+            'channel_id' => $settings->channel_id,
             'occupation' => [
                 'name' => $settings->occupation->name,
                 'translation_key' => $settings->occupation->translation_key,

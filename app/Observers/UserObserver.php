@@ -15,6 +15,7 @@ class UserObserver
 
         $user->settings()->create([
             'occupation_id' => 1, // none
+            'channel_id' => 'global',
             'color_id' => 1, // none
             'effect_id' => 1, // none
             'pronouns' => 'none', // none

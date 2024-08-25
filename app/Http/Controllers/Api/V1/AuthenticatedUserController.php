@@ -6,23 +6,54 @@ use App\Clients\Consumer\ConsumerClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingsRequest;
 use App\Models\Settings\Settings;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 class AuthenticatedUserController extends Controller
 {
     public function __construct(private ConsumerClient $client) {}
 
+    public function getSettings(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        $settingsQuery = $user->settings();
+        $fetcheableSettings = ['global'];
+
+        if ($channelId = $request->get('channel_id')) {
+            $fetcheableSettings[] = $channelId;
+        }
+
+        $response = $settingsQuery->whereIn('channel_id', $fetcheableSettings)
+            ->paginate();
+
+        return response()->json($response);
+    }
+
     public function putSettings(SettingsRequest $request): JsonResponse
     {
         $validatedSettings = $request->validated();
-        $userSettings = $request->user()->settings();
-        $userSettings->update($validatedSettings);
 
-        /** @var Settings $response */
-        $this->client->updateUser($request->user()->refresh());
+        $request
+            ->user()
+            ->settings()
+            ->updateOrCreate([
+                'channel_id' => $validatedSettings['channel_id'],
+            ], $validatedSettings);
 
-        $response = $userSettings->with(['occupation', 'color', 'effect'])->first();
+        /** @var User $user */
+        $user = $request
+            ->user()
+            ->refresh()
+            ->with(['accounts', 'settings.occupation', 'settings.effect', 'settings.color'])
+            ->first();
 
-        return response()->json($response);
+        $settings = $user->settings->first(fn (Settings $settings) => $settings->channel_id == $validatedSettings['channel_id']);
+
+        $this->client->updateUser($user, $settings);
+
+        return response()->json($settings);
     }
 }

@@ -13,6 +13,8 @@ Route::prefix('v1')->group(function () {
     Route::post('/authenticate/{provider}', [OAuthController::class, 'authenticateWithOAuth']);
 
     Route::middleware(['auth:sanctum', 'throttle:30,1'])->group(function () {
+        Route::get('/me/settings', [AuthenticatedUserController::class, 'getSettings'])
+            ->name('auth.my-settings');
         Route::put('/me/update-settings', [AuthenticatedUserController::class, 'putSettings'])
             ->name('auth.update-settings');
     });

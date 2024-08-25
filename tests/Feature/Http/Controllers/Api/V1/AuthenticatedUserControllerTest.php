@@ -85,18 +85,17 @@ class AuthenticatedUserControllerTest extends TestCase
     public function testGetSettings(?string $payload, int $count)
     {
         // Arrange
-        $user = User::factory();
+        $user = User::factory()->create();
 
         if ($payload) {
-            $user = $user->has(Settings::factory([
-                'channel_id' => 'danielhe4rt',
+            Settings::factory()->create([
+                'user_id' => $user->id,
+                'channel_id' => $payload,
                 'occupation_id' => Occupation::factory(),
                 'color_id' => Color::factory(),
                 'effect_id' => Effect::factory(),
-            ]), 'settings');
+            ]);
         }
-
-        $user = $user->create();
 
         // Act
         $response = $this

@@ -2,6 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Settings\Color;
+use App\Models\Settings\Effect;
+use App\Models\Settings\Occupation;
 use App\Models\Settings\Settings;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -19,9 +22,9 @@ class SettingsFactory extends Factory
             'user_id' => User::factory(),
             'channel_id' => 'global',
             'enabled' => true,
-            'color_id' => 1,
-            'effect_id' => 1,
-            'occupation_id' => 1,
+            'color_id' => Color::factory(),
+            'effect_id' => Effect::factory(),
+            'occupation_id' => Occupation::factory(),
             'pronouns' => $pronouns,
             'timezone' => $this->faker->timezone,
             'locale' => $this->faker->locale(),

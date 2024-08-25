@@ -92,7 +92,7 @@ class AuthenticatedUserControllerTest extends TestCase
                 'channel_id' => 'danielhe4rt',
                 'occupation_id' => Occupation::factory(),
                 'color_id' => Color::factory(),
-                'effect_id' => Effect::factory()
+                'effect_id' => Effect::factory(),
             ]), 'settings');
         }
 

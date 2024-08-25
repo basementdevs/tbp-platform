@@ -10,7 +10,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/colors', [SettingsController::class, 'getColors']);
     Route::get('/effects', [SettingsController::class, 'getEffects']);
 
-    Route::post('/authenticate/{provider}', [OAuthController::class, 'authenticateWithOAuth']);
+    Route::post('/authenticate/{provider}', [OAuthController::class, 'authenticateWithOAuth'])
+        ->name('oauth.handle');
 
     Route::middleware(['auth:sanctum', 'throttle:30,1'])->group(function () {
         Route::get('/me/settings', [AuthenticatedUserController::class, 'getSettings'])

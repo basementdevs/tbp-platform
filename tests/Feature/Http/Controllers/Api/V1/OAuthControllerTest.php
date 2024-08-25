@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
+use App\Clients\Consumer\ConsumerClient;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
@@ -13,6 +14,12 @@ class OAuthControllerTest extends TestCase
 
     public function test_can_do_stuff()
     {
+        $this->partialMock(ConsumerClient::class, function ($mock) {
+            $mock->shouldReceive('updateUser')
+                ->once()
+                ->andReturn(true);
+        });
+
         // Create a mock for the Socialite user
         $socialiteUserMock = \Mockery::mock(SocialiteUser::class);
 

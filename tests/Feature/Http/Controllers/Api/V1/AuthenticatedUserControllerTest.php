@@ -24,14 +24,11 @@ class AuthenticatedUserControllerTest extends TestCase
          * the Rust + ScyllaDB (and also Postgres, Redis) just to run the tests,
          * at the same time I'm not a php dev, so there may well be a better solution for this.
          */
-
-
-//
-//        $this->partialMock(ConsumerClient::class, function ($mock) use ($user) {
-//            $mock->shouldReceive('updateUser')
-//                ->once()
-//                ->andReturn(true);
-//        });
+        $this->partialMock(ConsumerClient::class, function ($mock) {
+            $mock->shouldReceive('updateUser')
+                ->once()
+                ->andReturn(true);
+        });
 
         $user->accounts()->create([
             'provider' => 'twitch',
@@ -88,7 +85,6 @@ class AuthenticatedUserControllerTest extends TestCase
 
         $user = $user->create();
 
-
         // Act
         $response = $this
             ->actingAs($user)
@@ -100,8 +96,8 @@ class AuthenticatedUserControllerTest extends TestCase
             ->assertJsonCount($count, 'data');
     }
 
-
-    public static function settingsDataProvider() {
+    public static function settingsDataProvider()
+    {
         return [
             'only_global' => [
                 'payload' => null,
@@ -109,8 +105,8 @@ class AuthenticatedUserControllerTest extends TestCase
             ],
             'with_channel' => [
                 'payload' => 'danielhe4rt',
-                'count' => 2
-            ]
+                'count' => 2,
+            ],
         ];
     }
 }

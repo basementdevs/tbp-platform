@@ -13,6 +13,10 @@ readonly class AuthenticationDTO
 
     public static function factory(AuthorizationDTO $authorization, User $user): AuthenticationDTO
     {
+        // TODO: remove after releasing the next version. this is a workaround to not break the actual implementation
+        // of settings feature
+        $user->settings = $user->settings->first(fn ($settings) => $settings->channel_id = 'global');
+
         return new AuthenticationDTO(
             authorization: $authorization,
             user: $user,

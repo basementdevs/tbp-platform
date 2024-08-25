@@ -31,7 +31,7 @@ class Settings extends Model
 
     protected $casts = [
         'is_developer' => 'boolean',
-        'enabled' => 'boolean'
+        'enabled' => 'boolean',
     ];
 
     public function getPronounsAttribute(): array

@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use App\Models\Settings\Occupation;
 use App\Models\Settings\Settings;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -15,6 +14,7 @@ class SettingsFactory extends Factory
     public function definition(): array
     {
         $pronouns = collect(config('extension.pronouns'))->keys()->shuffle()->first();
+
         return [
             'user_id' => User::factory(),
             'channel_id' => 'global',
@@ -27,7 +27,7 @@ class SettingsFactory extends Factory
             'locale' => $this->faker->locale(),
             'is_developer' => false,
             'created_at' => Carbon::now(),
-            'updated_at' => Carbon::now()
+            'updated_at' => Carbon::now(),
         ];
     }
 }

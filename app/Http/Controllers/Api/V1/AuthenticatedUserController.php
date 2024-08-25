@@ -50,11 +50,9 @@ class AuthenticatedUserController extends Controller
             ->with(['accounts', 'settings.occupation', 'settings.effect', 'settings.color'])
             ->first();
 
-
         $settings = $user->settings->first(fn (Settings $settings) => $settings->channel_id == $validatedSettings['channel_id']);
 
         $this->client->updateUser($user, $settings);
-
 
         return response()->json($settings);
     }

@@ -18,7 +18,7 @@ class EffectFactory extends Factory
             'name' => $this->faker->name(),
             'slug' => $this->faker->slug(),
             'translation_key' => $this->faker->word(),
-            'class' => $this->faker->word(),
+            'class_name' => $this->faker->word(),
             'hex' => $this->faker->word(),
         ];
     }

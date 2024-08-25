@@ -3,6 +3,9 @@
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
 use App\Clients\Consumer\ConsumerClient;
+use App\Models\Settings\Color;
+use App\Models\Settings\Effect;
+use App\Models\Settings\Occupation;
 use App\Models\Settings\Settings;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -85,7 +88,12 @@ class AuthenticatedUserControllerTest extends TestCase
         $user = User::factory();
 
         if ($payload) {
-            $user = $user->has(Settings::factory(['channel_id' => 'danielhe4rt']), 'settings');
+            $user = $user->has(Settings::factory([
+                'channel_id' => 'danielhe4rt',
+                'occupation_id' => Occupation::factory(),
+                'color_id' => Color::factory(),
+                'effect_id' => Effect::factory()
+            ]), 'settings');
         }
 
         $user = $user->create();

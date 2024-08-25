@@ -15,7 +15,7 @@ class OAuthControllerTest extends TestCase
     public function test_can_do_stuff()
     {
         $this->partialMock(ConsumerClient::class, function ($mock) {
-            $mock->shouldReceive('updateUser')
+            $mock->shouldReceive('sendUserToken')
                 ->once()
                 ->andReturn(true);
         });

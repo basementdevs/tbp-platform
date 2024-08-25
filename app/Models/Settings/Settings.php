@@ -3,16 +3,23 @@
 namespace App\Models\Settings;
 
 use App\Models\User;
+use Database\Factories\SettingsFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $channel_id
+ * @property bool $enabled
+ */
 class Settings extends Model
 {
     use HasFactory;
 
     protected $fillable = [
         'user_id',
+        'enabled',
+        'channel_id',
         'color_id',
         'effect_id',
         'occupation_id',
@@ -49,5 +56,10 @@ class Settings extends Model
     public function effect(): BelongsTo
     {
         return $this->belongsTo(Effect::class);
+    }
+
+    protected static function newFactory(): SettingsFactory
+    {
+        return SettingsFactory::new();
     }
 }

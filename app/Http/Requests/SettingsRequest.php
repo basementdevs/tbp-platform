@@ -13,6 +13,7 @@ class SettingsRequest extends FormRequest
         return [
             'occupation_id' => ['exists:occupations,id'],
             'channel_id' => ['required', 'string'],
+            'enabled' => ['required'],
             'color_id' => ['exists:settings_colors,id'],
             'effect_id' => ['exists:settings_effects,id'],
             'timezone' => ['string'],

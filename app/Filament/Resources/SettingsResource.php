@@ -55,6 +55,8 @@ class SettingsResource extends Resource
                 TextColumn::make('user_id'),
 
                 TextColumn::make('occupation_id'),
+                TextColumn::make('channel_id'),
+                TextColumn::make('channel_id'),
 
                 TextColumn::make('pronouns'),
             ])

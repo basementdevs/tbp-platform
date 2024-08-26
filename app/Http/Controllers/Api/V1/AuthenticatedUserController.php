@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api\V1;
 use App\Clients\Consumer\ConsumerClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingsRequest;
-use App\Models\Settings\Settings;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -50,7 +49,10 @@ class AuthenticatedUserController extends Controller
             ->with(['accounts', 'settings.occupation', 'settings.effect', 'settings.color'])
             ->first();
 
-        $settings = $user->settings->first(fn (Settings $settings) => $settings->channel_id == $validatedSettings['channel_id']);
+        $settings = $user->settings()
+            ->with(['occupation', 'effect', 'color'])
+            ->where('channel_id', $validatedSettings['channel_id'])
+            ->first();
 
         $this->client->updateUser($user, $settings);
 

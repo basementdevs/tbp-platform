@@ -47,7 +47,6 @@ class AuthenticatedUserControllerTest extends TestCase
         ]);
 
         $payload = [
-            'user_id' => $user->id,
             'occupation_id' => 2,
             'enabled' => true,
             'channel_id' => 'danielhe4rt',

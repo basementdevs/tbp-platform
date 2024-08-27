@@ -20,6 +20,9 @@ class EffectFactory extends Factory
             'translation_key' => $this->faker->word(),
             'class_name' => $this->faker->word(),
             'hex' => $this->faker->word(),
+            'raw_css' => <<<'CSS'
+            .none {}
+            CSS
         ];
     }
 }

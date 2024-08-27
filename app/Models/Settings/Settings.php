@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 /**
  * @property string $channel_id
  * @property bool $enabled
+ * @property array $formatted_pronouns
  */
 class Settings extends Model
 {
@@ -33,6 +34,7 @@ class Settings extends Model
         'is_developer' => 'boolean',
         'enabled' => 'boolean',
     ];
+
 
     public function getPronounsAttribute(): array
     {

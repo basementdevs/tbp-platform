@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Clients\Consumer\ConsumerClient;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\SettingsRequest;
+use App\Models\Settings\Settings;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -48,11 +49,13 @@ class AuthenticatedUserController extends Controller
             ->user()
             ->refresh();
 
+        /** @var Settings $settings */
         $settings = $request->user()->settings()->where('channel_id', '=', $validatedSettings['channel_id'])
             ->with('occupation', 'color', 'effect')
             ->first();
 
         $this->client->updateUser($user, $settings);
+
 
         return response()->json($settings);
     }

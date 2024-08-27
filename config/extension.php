@@ -169,6 +169,10 @@ return [
             'translation_key' => 'None',
             'hex' => null,
             'class_name' => 'none',
+            'raw_css' => <<<'CSS'
+            .none {}
+            CSS
+
         ],
         'glow-purple' => [
             'name' => 'Glow Purple',
@@ -176,6 +180,47 @@ return [
             'translation_key' => 'GlowPurple',
             'class_name' => 'glow-purple',
             'hex' => '#FFD700',
+            'raw_css' => <<<'CSS'
+            .glow-purple {
+                text-align: center;
+                -webkit-animation: glow-purple 1s ease-in-out infinite alternate;
+                -moz-animation: glow-purple 1s ease-in-out infinite alternate;
+                animation: glow-purple 1s ease-in-out infinite alternate;
+            }
+
+
+            @-webkit-keyframes glow-purple {
+                from {
+                    text-shadow: 0 0 2px rgb(170, 100, 234), 0 0 2px rgb(170, 100, 234), 0 0 5px rgb(170, 100, 234), 0 0 7px rgb(170, 100, 234), 0 0 9px rgb(170, 100, 234), 0 0 12px rgb(170, 100, 234), 0 0 15px rgb(170, 100, 234);
+                }
+                to {
+                    text-shadow: 0 0 2px rgb(170, 100, 234), 0 0 5px rgb(170, 100, 234), 0 0 7px rgb(170, 100, 234), 0 0 9px rgb(170, 100, 234), 0 0 12px rgb(170, 100, 234), 0 0 15px rgb(170, 100, 234), 0 0 15px rgb(170, 100, 234);
+                }
+            }
+            CSS
+        ],
+        'default-gradient' => [
+            'name' => 'Default Gradient',
+            'slug' => 'default-gradient',
+            'translation_key' => 'DefaultGradient',
+            'class_name' => 'gradient-default',
+            'hex' => '#FFD700',
+            'raw_css' => <<<'CSS'
+            .gradient-default {
+              background: linear-gradient(90deg, #FF6D1B, #FFEE55, #5BFF89, #4D8AFF, #6B5FFF, #FF64F9, #FF6565);
+              -webkit-background-clip: text;
+              -webkit-text-fill-color: transparent;
+              -webkit-animation: gradient-default-animate 2s infinite linear;
+              -moz-animation: gradient-default-animate 2s infinite linear;
+              background-size: 200%;
+              animation: gradient-default-animate 2s infinite linear;
+            }
+
+            @-webkit-keyframes gradient-default-animate {
+              0% {background-position: 0;}
+              100% {background-position: 200%;}
+            }
+            CSS
         ],
     ],
 ];

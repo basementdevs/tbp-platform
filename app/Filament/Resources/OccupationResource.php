@@ -55,6 +55,10 @@ class OccupationResource extends Resource
     {
         return $table
             ->columns([
+
+                TextColumn::make('id'),
+
+
                 ImageColumn::make('image_url')
                     ->label('Icon'),
 
@@ -67,6 +71,9 @@ class OccupationResource extends Resource
                     ->sortable(),
 
                 TextColumn::make('translation_key'),
+                TextColumn::make('settings_count')
+                    ->label('N°')
+                    ->counts('settings'),
             ])
             ->filters([
                 //

@@ -2,14 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use AbdelhamidErrahmouni\FilamentMonacoEditor\MonacoEditor;
 use App\Filament\Resources\EffectResource\Pages;
 use App\Models\Settings\Effect;
+use App\Tables\Columns\TextEffectColumn;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
+use Filament\Tables\Actions\ReplicateAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\ColorColumn;
@@ -31,30 +35,37 @@ class EffectResource extends Resource
             ->schema([
                 Placeholder::make('created_at')
                     ->label('Created Date')
-                    ->content(fn (?Effect $record): string => $record?->created_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?Effect $record): string => $record?->created_at?->diffForHumans() ?? '-'),
 
                 Placeholder::make('updated_at')
                     ->label('Last Modified Date')
-                    ->content(fn (?Effect $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
+                    ->content(fn(?Effect $record): string => $record?->updated_at?->diffForHumans() ?? '-'),
 
                 TextInput::make('name')
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(fn ($state, callable $set) => $set('slug', Str::slug($state))),
+                    ->afterStateUpdated(fn($state, callable $set) => $set('slug', Str::slug($state))),
 
                 TextInput::make('slug')
-                    ->disabled()
                     ->required()
-                    ->unique(Effect::class, 'slug', fn ($record) => $record),
+                    ->unique(Effect::class, 'slug', fn($record) => $record),
 
                 TextInput::make('translation_key')
                     ->required(),
 
-                TextInput::make('class')
+                TextInput::make('class_name')
                     ->required(),
 
-                TextInput::make('hex')
-                    ->required(),
+                TextInput::make('hex'),
+
+                Section::make('Editor')
+                    ->schema([
+                        MonacoEditor::make('raw_css')
+                            ->language('css')
+                            ->previewHeadEndContent(fn($state) => "<style> body { background-color: #18181B} $state </style>")
+                            ->previewBodyStartContent(fn($record) => "<p class='" . $record->class_name . "'> CSS is my Passion </p>")
+                    ])
+
             ]);
     }
 
@@ -62,7 +73,7 @@ class EffectResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('name')
+                TextEffectColumn::make('name')
                     ->searchable()
                     ->sortable(),
 
@@ -72,15 +83,16 @@ class EffectResource extends Resource
 
                 TextColumn::make('translation_key'),
 
-                TextColumn::make('class'),
+                TextColumn::make('class_name'),
 
-                ColorColumn::make('hex'),
+                ColorColumn::make('hex')
             ])
             ->filters([
                 //
             ])
             ->actions([
                 EditAction::make(),
+                ReplicateAction::make(),
                 DeleteAction::make(),
             ])
             ->bulkActions([

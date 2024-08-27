@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "abdelhamiderrahmouni/filament-monaco-editor": "^0.2.5",
         "chrisreedio/socialment": "^3.9",
         "filament/filament": "^3.2",
         "jeffgreco13/filament-breezy": "^2.4",

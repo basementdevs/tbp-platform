@@ -45,9 +45,6 @@ class UserResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('email')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_admin')
                     ->boolean(),
                 Tables\Columns\IconColumn::make('accounts_exists')
@@ -57,6 +54,9 @@ class UserResource extends Resource
                     ->exists([
                         'accounts' => fn (Builder $query) => $query->where('provider', '=', 'twitch'),
                     ]),
+                Tables\Columns\TextColumn::make('settings_count')
+                    ->label('Channels')
+                    ->counts('settings'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

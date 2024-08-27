@@ -14,6 +14,7 @@ return new class extends Migration
             $table->string('slug');
             $table->string('translation_key');
             $table->string('class_name');
+            $table->text('raw_css');
             $table->string('hex')->nullable();
             $table->timestamps();
         });

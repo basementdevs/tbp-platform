@@ -55,7 +55,7 @@ class ConsumerClient
                 'slug' => $settings->color->slug,
                 'hex' => $settings->color->hex,
             ],
-            'pronouns' => $settings->pronouns,
+            'pronouns' => $settings->formatted_pronouns,
             'timezone' => $settings->timezone,
             'username' => $account->nickname,
             'is_developer' => (bool) $user->is_admin,

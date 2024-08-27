@@ -26,6 +26,7 @@ class AuthenticatedUserController extends Controller
         }
 
         $response = $settingsQuery->whereIn('channel_id', $fetcheableSettings)
+            ->with(['occupation', 'effect', 'color'])
             ->paginate();
 
         return response()->json($response);

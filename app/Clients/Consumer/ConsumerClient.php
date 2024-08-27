@@ -30,7 +30,7 @@ class ConsumerClient
         $uri = $this->baseVersionedUrl.'/settings';
 
         /** @var ConnectedAccount $account */
-        $account = $user->accounts->first(fn ($account) => $account->provider == 'twitch');
+        $account = $user->accounts()->where('provider', 'twitch')->first();
 
         $payload = [
             'user_id' => (int) $account->provider_user_id,

@@ -12,6 +12,8 @@ use Filament\Tables\Actions\BulkActionGroup;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Columns\ColorColumn;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -52,13 +54,19 @@ class SettingsResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('user_id'),
-
-                TextColumn::make('occupation_id'),
-                TextColumn::make('channel_id'),
-                TextColumn::make('color_id'),
-                TextColumn::make('effect_id'),
-                TextColumn::make('enabled'),
+                TextColumn::make('user.name'),
+                TextColumn::make('channel_id')
+                    ->label('Channel')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'global' => 'warning',
+                        default => 'primary'
+                    }),
+                TextColumn::make('occupation.name'),
+                ColorColumn::make('color.hex'),
+                TextColumn::make('effect.name'),
+                IconColumn::make('enabled')
+                    ->boolean(),
 
                 TextColumn::make('pronouns'),
             ])

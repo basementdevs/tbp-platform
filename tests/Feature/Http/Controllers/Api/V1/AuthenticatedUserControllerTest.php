@@ -98,7 +98,16 @@ class AuthenticatedUserControllerTest extends TestCase
         // Assert
         $response
             ->assertOk()
-            ->assertJsonCount($count, 'data');
+            ->assertJsonCount($count, 'data')
+            ->assertJsonStructure([
+                'data' => [
+                    0 => [
+                        'color',
+                        'effect',
+                        'occupation',
+                    ],
+                ],
+            ]);
     }
 
     public static function settingsDataProvider()

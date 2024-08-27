@@ -47,7 +47,7 @@ class AuthenticatedUserController extends Controller
             ->user()
             ->refresh();
 
-        $settings = $request->user()->settings()->where(['channel_id', '=', $validatedSettings['channel_id']])
+        $settings = $request->user()->settings()->where('channel_id', '=', $validatedSettings['channel_id'])
             ->with('occupation', 'color', 'effect')
             ->first();
 

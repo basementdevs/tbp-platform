@@ -32,14 +32,13 @@ class GenerateEffectSheet extends Command
         $this->info('Generating CSS');
         $effectsQuery = Effect::query();
 
-        foreach(config('extension.effects') as $effect) {
+        foreach (config('extension.effects') as $effect) {
             $effectsQuery->firstOrCreate(['slug' => $effect['slug']], $effect);
         }
 
         $effectsCss = $effectsQuery
             ->get()
-            ->reduce(fn(string $initial, Effect $effect) => sprintf("%s %s %s", $initial, $effect->raw_css, PHP_EOL), '');
-
+            ->reduce(fn (string $initial, Effect $effect) => sprintf('%s %s %s', $initial, $effect->raw_css, PHP_EOL), '');
 
         file_put_contents(storage_path('app/public/effects.css'), $effectsCss);
 

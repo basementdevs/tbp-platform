@@ -56,7 +56,6 @@ class AuthenticatedUserController extends Controller
 
         $this->client->updateUser($user, $settings);
 
-
         return response()->json($settings);
     }
 }

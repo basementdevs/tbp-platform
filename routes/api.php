@@ -16,9 +16,9 @@ Route::prefix('v1')->group(function () {
     Route::middleware(['auth:sanctum', 'throttle:30,1'])
         ->prefix('/me')
         ->group(function () {
-        Route::get('/settings', [AuthenticatedUserController::class, 'getSettings'])
-            ->name('auth.my-settings');
-        Route::put('/update-settings', [AuthenticatedUserController::class, 'putSettings'])
-            ->name('auth.update-settings');
-    });
+            Route::get('/settings', [AuthenticatedUserController::class, 'getSettings'])
+                ->name('auth.my-settings');
+            Route::put('/update-settings', [AuthenticatedUserController::class, 'putSettings'])
+                ->name('auth.update-settings');
+        });
 });

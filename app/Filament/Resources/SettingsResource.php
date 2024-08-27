@@ -7,7 +7,6 @@ use App\Models\Settings\Settings;
 use App\Tables\Columns\TextEffectColumn;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\ColorPicker;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;

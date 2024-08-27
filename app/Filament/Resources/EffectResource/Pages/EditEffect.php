@@ -11,7 +11,6 @@ class EditEffect extends EditRecord
 {
     protected static string $resource = EffectResource::class;
 
-
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $record = parent::handleRecordUpdate($record, $data);

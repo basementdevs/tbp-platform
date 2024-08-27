@@ -2,9 +2,7 @@
 
 namespace App\Tables\Columns;
 
-use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
-
 
 class TextEffectColumn extends TextColumn
 {

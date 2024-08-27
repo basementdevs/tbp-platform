@@ -58,7 +58,6 @@ class OccupationResource extends Resource
 
                 TextColumn::make('id'),
 
-
                 ImageColumn::make('image_url')
                     ->label('Icon'),
 

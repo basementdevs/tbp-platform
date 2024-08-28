@@ -36,6 +36,8 @@ class GenerateEffectSheet extends Command
             $effectsQuery->firstOrCreate(['slug' => $effect['slug']], $effect);
         }
 
+        cache()->put('settings-effects', Effect::paginate(15), 60 * 60);
+
         $effectsCss = $effectsQuery
             ->get()
             ->reduce(fn (string $initial, Effect $effect) => sprintf('%s %s %s', $initial, $effect->raw_css, PHP_EOL), '');

@@ -36,7 +36,8 @@ class GenerateEffectSheet extends Command
             $effectsQuery->firstOrCreate(['slug' => $effect['slug']], $effect);
         }
 
-        cache()->put('settings-effects', Effect::paginate(15), 60 * 60);
+        $paginatedQueries = Effect::query()->select(['id', 'name', 'hex', 'slug', 'translation_key', 'created_at', 'updated_at'])->paginate(15);
+        cache()->put('settings-effects', $paginatedQueries, 60 * 60);
 
         $effectsCss = $effectsQuery
             ->get()

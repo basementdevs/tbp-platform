@@ -24,7 +24,7 @@ class SettingsController extends Controller
     public function getEffects(): JsonResponse
     {
         $cachedEffects = cache()->remember('settings-effects', $this->ttl, function () {
-            return Effect::paginate(15);
+            return Effect::query()->select(['id', 'name', 'hex', 'slug', 'translation_key', 'created_at', 'updated_at'])->paginate(15);
         });
 
         return response()->json($cachedEffects);

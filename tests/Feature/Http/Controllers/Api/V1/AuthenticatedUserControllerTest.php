@@ -110,6 +110,60 @@ class AuthenticatedUserControllerTest extends TestCase
             ]);
     }
 
+    #[DataProvider('settingsByFieldDataProvider')]
+    public function test_user_can_update_a_single_field_put(array $payload): void
+    {
+        // prepare
+        $user = User::factory()->create();
+
+        $payload['channel_id'] = 'global';
+
+        $this->partialMock(ConsumerClient::class, function ($mock) {
+            $mock->shouldReceive('updateUser')
+                ->once()
+                ->andReturn(true);
+        });
+
+        // act
+        $response = $this
+            ->actingAs($user)
+            ->patchJson(route('auth.update-single-setting'), $payload);
+
+        // assert
+        $response->assertOk();
+
+        $this->assertDatabaseHas(Settings::class, [
+            'user_id' => $user->getKey(),
+            ...$payload,
+        ]);
+    }
+
+    public static function settingsByFieldDataProvider()
+    {
+        return [
+            'update_color' => [
+                'payload' => [
+                    'color_id' => 2,
+                ],
+            ],
+            'update_effect' => [
+                'payload' => [
+                    'effect_id' => 2,
+                ],
+            ],
+            'update_occupation' => [
+                'payload' => [
+                    'occupation_id' => 2,
+                ],
+            ],
+            'update_pronouns' => [
+                'payload' => [
+                    'pronouns' => 'she-her',
+                ],
+            ],
+        ];
+    }
+
     public static function settingsDataProvider()
     {
         return [

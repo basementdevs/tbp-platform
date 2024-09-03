@@ -19,20 +19,6 @@
   background: linear-gradient(90deg, #FF6D1B, #FFEE55, #5BFF89, #4D8AFF, #6B5FFF, #FF64F9, #FF6565);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  -webkit-animation: gradient-default-animate 3s infinite linear;
-  -moz-animation: gradient-default-animate 3s infinite linear;
-  background-size: 200%;
-  animation: gradient-default-animate 3s infinite linear;
-}
-
-@-webkit-keyframes gradient-default-animate {
-  0% {background-position: 0;}
-  100% {background-position: 200%;}
-} 
- .gradient-netherlands {
-  background: linear-gradient(90deg, #21468B, #FFFFFF, #AE1C28, #21468B);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
   -webkit-animation: gradient-default-animate 2s infinite linear;
   -moz-animation: gradient-default-animate 2s infinite linear;
   background-size: 200%;

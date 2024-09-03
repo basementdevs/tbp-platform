@@ -58,4 +58,30 @@ class AuthenticatedUserController extends Controller
 
         return response()->json($settings);
     }
+
+    public function patchSettings(SettingsRequest $request): JsonResponse
+    {
+        $validatedSettings = $request->validated();
+
+        $request
+            ->user()
+            ->settings()
+            ->updateOrCreate([
+                'channel_id' => $validatedSettings['channel_id'],
+            ], $validatedSettings);
+
+        /** @var User $user */
+        $user = $request
+            ->user()
+            ->refresh();
+
+        /** @var Settings $settings */
+        $settings = $request->user()->settings()->where('channel_id', '=', $validatedSettings['channel_id'])
+            ->with('occupation', 'color', 'effect')
+            ->first();
+
+        $this->client->updateUser($user, $settings);
+
+        return response()->json($settings);
+    }
 }

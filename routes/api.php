@@ -20,5 +20,7 @@ Route::prefix('v1')->group(function () {
                 ->name('auth.my-settings');
             Route::put('/update-settings', [AuthenticatedUserController::class, 'putSettings'])
                 ->name('auth.update-settings');
+            Route::patch('/update-settings', [AuthenticatedUserController::class, 'patchSettings'])
+                ->name('auth.update-single-setting');
         });
 });

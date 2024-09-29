@@ -3,15 +3,12 @@
 namespace Tests\Feature\Http\Controllers\Api\V1;
 
 use App\Clients\Consumer\ConsumerClient;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
 
 class OAuthControllerTest extends TestCase
 {
-    use RefreshDatabase;
-
     public function test_can_do_stuff()
     {
         $this->partialMock(ConsumerClient::class, function ($mock) {

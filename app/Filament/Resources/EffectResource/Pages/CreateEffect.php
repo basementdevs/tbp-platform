@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\EffectResource\Pages;
 
 use App\Filament\Resources\EffectResource;
-use Artisan;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Artisan;
 
 class CreateEffect extends CreateRecord
 {

@@ -172,7 +172,6 @@ return [
             'raw_css' => <<<'CSS'
             .none {}
             CSS
-
         ],
         'glow-purple' => [
             'name' => 'Glow Purple',

@@ -3,8 +3,8 @@
 namespace App\Console\Commands;
 
 use App\Models\Settings\Effect;
-use Artisan;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 class GenerateEffectSheet extends Command
 {

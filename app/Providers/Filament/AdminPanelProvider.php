@@ -27,7 +27,6 @@ class AdminPanelProvider extends PanelProvider
         return $panel
             ->default()
             ->id('admin')
-            ->path('admin')
             ->login()
             ->colors([
                 'primary' => Color::Violet,
@@ -43,8 +42,8 @@ class AdminPanelProvider extends PanelProvider
                 BreezyCore::make()
                     ->myProfile(
                         shouldRegisterNavigation: true, // Adds a main navigation item for the My Profile page (default = false)
-                        navigationGroup: 'Settings', // Sets the navigation group for the My Profile page (default = null)e)
-                        slug: 'profile' // Sets the slug for the profile page (default = 'my-profile')
+                        slug: 'profile', // Sets the slug for the profile page (default = 'my-profile')
+                        navigationGroup: 'Settings', // Sets the navigation group for the My Profile page (default = null)
                     ),
             ])
             ->discoverWidgets(in: app_path('Filament/Widgets'), for: 'App\\Filament\\Widgets')

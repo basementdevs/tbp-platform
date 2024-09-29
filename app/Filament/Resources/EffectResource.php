@@ -63,7 +63,7 @@ class EffectResource extends Resource
                         MonacoEditor::make('raw_css')
                             ->language('css')
                             ->previewHeadEndContent(fn ($state) => "<style> body { background-color: #18181B} $state </style>")
-                            ->previewBodyStartContent(fn ($record) => "<p class='".$record->class_name."'> CSS is my Passion </p>"),
+                            ->previewBodyStartContent(fn ($record) => "<p class='".$record?->class_name."'> CSS is my Passion </p>"),
                     ]),
 
             ]);

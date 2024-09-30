@@ -12,7 +12,7 @@ on:
   workflow_dispatch:
     inputs:
       coverage:
-        description: 'Run with coverage tests'
+        description: "Run with coverage tests"
         required: false
         default: false
         type: boolean
@@ -34,7 +34,7 @@ jobs:
       combined-key: ${{ steps.prepare-env.outputs.combined-key }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
       - name: Prepare environment and composer data
         id: prepare-env
         run: |
@@ -45,13 +45,13 @@ jobs:
           combined_key="${os_lower}-${arch_lower}-composer-${composer_hash}"
           echo "combined-key=${combined_key}" >> "$GITHUB_OUTPUT"
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           ini-values: ${{ env.PHP_INI_PROPERTIES }}
       - name: Install composer dependencies
-        uses: "ramsey/composer-install@v3"
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
         with:
           composer-options: "--optimize-autoloader --prefer-dist"
           custom-cache-key: ${{ steps.prepare-env.outputs.combined-key }}
@@ -61,15 +61,15 @@ jobs:
     needs: setup
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           ini-values: ${{ env.PHP_INI_PROPERTIES }}
       - name: Install composer dependencies
-        uses: "ramsey/composer-install@v3"
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
         with:
           composer-options: "--optimize-autoloader --prefer-dist"
           custom-cache-key: ${{ needs.setup.outputs.combined-key }}
@@ -114,16 +114,16 @@ jobs:
           --health-retries 5
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           ini-values: ${{ env.PHP_INI_PROPERTIES }}
-          coverage: 'xdebug'
+          coverage: "xdebug"
       - name: Install composer dependencies
-        uses: "ramsey/composer-install@v3"
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
         with:
           composer-options: "--optimize-autoloader --prefer-dist"
           custom-cache-key: ${{ needs.setup.outputs.combined-key }}
@@ -148,3 +148,36 @@ jobs:
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+  deploy:
+    name: Deploy on Forge
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-24.04
+    environment: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/develop' && 'develop' }}
+    needs:
+      - tests
+      - lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+      - name: Print GitHub Context
+        run: |
+          echo "### GitHub Context ###"
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Ref: ${{ github.ref }}"
+          echo "Branch Name: ${{ github.ref_name }}"
+          echo "Commit Hash: ${{ github.sha }}"
+          echo "Actor: ${{ github.actor }}"
+          echo "Environment: ${{ vars.DEPLOY_ENV }}"
+      - name: Trigger Deployment on Laravel Forge
+        env:
+          FORGE_DEPLOY_BRANCH: ${{ github.ref_name }}
+          FORGE_DEPLOY_COMMIT: ${{ github.sha }}
+          FORGE_DEPLOY_AUTHOR: ${{ github.actor }}
+        run: |
+          curl -X POST \
+            "https://forge.laravel.com/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deploy/http" \
+            --data-urlencode "token=${{ secrets.FORGE_DEPLOY_TOKEN }}" \
+            --data-urlencode "forge_deploy_branch=${{ env.FORGE_DEPLOY_BRANCH }}" \
+            --data-urlencode "forge_deploy_commit=${{ env.FORGE_DEPLOY_COMMIT }}" \
+            --data-urlencode "forge_deploy_author=${{ env.FORGE_DEPLOY_AUTHOR }}" \
+            --data-urlencode "env=${{ vars.DEPLOY_ENV }}"

@@ -143,7 +143,7 @@ jobs:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
       - name: Run coverage tests
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.coverage }}
+        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.coverage == 'true' }}
         run: php artisan test --coverage --min=90
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}

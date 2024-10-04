@@ -28,10 +28,6 @@ class OAuthController extends Controller
             $response->user->id
         ));
 
-        \Log::alert('fodase', [
-            'fodase' => $response,
-        ]);
-
         return response()->json($response);
     }
 
@@ -39,7 +35,7 @@ class OAuthController extends Controller
     {
         $tokenExpiration = $socialUser->expiresIn
             ? now()->addSeconds($socialUser->expiresIn)
-            : now()->addDay();
+            : now()->addDays(config('extension.user_token_ttl'));
 
         return \DB::transaction(function () use ($provider, $socialUser, $tokenExpiration) {
             // Create a user or log them in...

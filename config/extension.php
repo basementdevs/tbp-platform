@@ -1,6 +1,7 @@
 <?php
 
 return [
+    'user_token_ttl' => env('TBP_USER_TOKEN_TTL_IN_DAYS',30),
     'pronouns' => [
         'none' => [
             'name' => 'None',

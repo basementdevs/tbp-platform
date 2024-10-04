@@ -35,7 +35,7 @@ class OAuthController extends Controller
     {
         $tokenExpiration = $socialUser->expiresIn
             ? now()->addSeconds($socialUser->expiresIn)
-            : now()->addDays(config('extension.user_token_ttl'));
+            : now()->addDays((int) config('extension.user_token_ttl'));
 
         return \DB::transaction(function () use ($provider, $socialUser, $tokenExpiration) {
             // Create a user or log them in...

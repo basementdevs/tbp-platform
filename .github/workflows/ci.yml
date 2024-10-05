@@ -185,10 +185,10 @@ jobs:
         run: |
           MAX_ATTEMPTS=20
           ATTEMPT=0
-          STATUS="in_progress"
+          STATUS="null"
           LATEST_COMMIT="${{ github.sha }}"
 
-          while [[ "$STATUS" == "in_progress" || "$STATUS" == "null" ]] && [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+          while [[ "$STATUS" == "null" || "$STATUS" == "in_progress" || "$STATUS" == "deploying" || "$STATUS" == "queued" ]] && [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
             echo "Checking deployment status (Attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)..."
 
             RESPONSE=$(curl -fsSL -X GET \

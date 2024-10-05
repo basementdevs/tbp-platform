@@ -22,7 +22,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PHP_VERSION: 8.2
+  PHP_VERSION: 8.3
   PHP_EXTENSIONS: mbstring,pdo,xml,ctype,fileinfo,json,curl,openssl,dom,zip
   PHP_INI_PROPERTIES: post_max_size=256M,upload_max_filesize=256M
 

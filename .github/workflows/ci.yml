@@ -152,7 +152,7 @@ jobs:
     name: Deploy on Forge
     if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
-    environment: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/develop' && 'develop' }}
+    environment: ${{ github.ref_name == 'develop' && 'develop' || github.ref_name == 'main' && 'production' || null }}
     needs:
       - tests
       - lint

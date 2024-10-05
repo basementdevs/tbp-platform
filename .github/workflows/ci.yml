@@ -173,7 +173,7 @@ jobs:
           echo "Actor: ${{ github.actor }}"
       - name: Trigger Deployment on Laravel Forge
         run: |
-          curl -X POST \
+          curl -fsSL -X POST \
             "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment/deploy" \
             -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
             --data-urlencode "forge_deploy_branch=${{ github.ref_name }}" \
@@ -190,7 +190,7 @@ jobs:
           while [[ "$STATUS" == "in_progress" || "$STATUS" == "null" ]] && [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
             echo "Checking deployment status (Attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)..."
 
-            RESPONSE=$(curl -s -X GET \
+            RESPONSE=$(curl -fsSL -X GET \
               "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment-history" \
               -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
               -H "Accept: application/json")

@@ -179,7 +179,8 @@ jobs:
             --data-urlencode "forge_deploy_branch=${{ github.ref_name }}" \
             --data-urlencode "forge_deploy_commit=${{ github.sha }}" \
             --data-urlencode "forge_deploy_author=${{ github.actor }}" \
-            --data-urlencode "forge_deploy_message=${{ steps.get_commit_message.outputs.message }}"
+            --data-urlencode "forge_deploy_message=${{ steps.get_commit_message.outputs.message }}" \
+            > /dev/null
       - name: Wait for deployment to complete
         run: |
           MAX_ATTEMPTS=20
@@ -198,6 +199,8 @@ jobs:
             LATEST_DEPLOYMENT=$(echo "$RESPONSE" | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
 
             STATUS=$LATEST_DEPLOYMENT
+
+            echo "Current deployment status: $STATUS"
 
             if [[ "$STATUS" == "finished" ]]; then
               echo "Deployment completed successfully."

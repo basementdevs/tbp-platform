@@ -150,7 +150,7 @@ jobs:
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
   deploy:
     name: Deploy on Forge
-    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-24.04
     environment: ${{ github.ref == 'refs/heads/main' && 'production' || github.ref == 'refs/heads/develop' && 'develop' }}
     needs:
@@ -162,27 +162,57 @@ jobs:
       - name: Get the latest commit message
         id: get_commit_message
         run: |
-          echo "forge_deploy_message=$(git log -1 --pretty=%s)" >> "$GITHUB_OUTPUT"
+          echo "message=$(git log -1 --pretty=%s)" >> "$GITHUB_OUTPUT"
       - name: Print GitHub Context
         run: |
           echo "### GitHub Context ###"
           echo "Event Name: ${{ github.event_name }}"
           echo "Ref: ${{ github.ref_name }} | ${{ github.ref }}"
-          echo "Commit message: ${{ steps.get_commit_message.outputs.forge_deploy_message }}"
+          echo "Commit title: ${{ steps.get_commit_message.outputs.message }}"
           echo "Commit Hash: ${{ github.sha }}"
-          echo "Actor: @${{ github.actor }}"
+          echo "Actor: ${{ github.actor }}"
       - name: Trigger Deployment on Laravel Forge
-        env:
-          FORGE_DEPLOY_BRANCH: ${{ github.ref_name }}
-          FORGE_DEPLOY_COMMIT: ${{ github.sha }}
-          FORGE_DEPLOY_AUTHOR: ${{ github.actor }}
-          FORGE_DEPLOY_MESSAGE: ${{ steps.get_commit_message.outputs.forge_deploy_message }}
         run: |
-          curl -X POST \
-            "https://forge.laravel.com/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deploy/http" \
-            --data-urlencode "token=${{ secrets.FORGE_DEPLOY_TOKEN }}" \
-            --data-urlencode "forge_deploy_branch=${{ env.FORGE_DEPLOY_BRANCH }}" \
-            --data-urlencode "forge_deploy_commit=${{ env.FORGE_DEPLOY_COMMIT }}" \
-            --data-urlencode "forge_deploy_author=${{ env.FORGE_DEPLOY_AUTHOR }}" \
-            --data-urlencode "forge_deploy_message=${{ env.FORGE_DEPLOY_MESSAGE }}" \
-            --data-urlencode "env=${{ vars.DEPLOY_ENV }}"
+          curl -fsSL -X POST \
+            "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment/deploy" \
+            -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
+            --data-urlencode "forge_deploy_branch=${{ github.ref_name }}" \
+            --data-urlencode "forge_deploy_commit=${{ github.sha }}" \
+            --data-urlencode "forge_deploy_author=${{ github.actor }}" \
+            --data-urlencode "forge_deploy_message=${{ steps.get_commit_message.outputs.message }}"
+      - name: Wait for deployment to complete
+        run: |
+          MAX_ATTEMPTS=20
+          ATTEMPT=0
+          STATUS="in_progress"
+          LATEST_COMMIT="${{ github.sha }}"
+
+          while [[ "$STATUS" == "in_progress" || "$STATUS" == "null" ]] && [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+            echo "Checking deployment status (Attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)..."
+
+            RESPONSE=$(curl -fsSL -X GET \
+              "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment-history" \
+              -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
+              -H "Accept: application/json")
+
+            LATEST_DEPLOYMENT=$(echo "$RESPONSE" | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
+
+            STATUS=$LATEST_DEPLOYMENT
+
+            if [[ "$STATUS" == "finished" ]]; then
+              echo "Deployment completed successfully."
+              exit 0
+            elif [[ "$STATUS" == "failed" ]]; then
+              echo "Deployment failed!"
+              exit 1
+            else
+              echo "Deployment is still in progress..."
+              ATTEMPT=$((ATTEMPT + 1))
+              sleep 15
+            fi
+          done
+
+          if [ $ATTEMPT -ge $MAX_ATTEMPTS ]; then
+            echo "Deployment timed out after $MAX_ATTEMPTS attempts."
+            exit 1
+          fi

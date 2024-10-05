@@ -196,7 +196,7 @@ jobs:
               -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
               -H "Accept: application/json")
 
-            LATEST_DEPLOYMENT=$(echo "$RESPONSE" | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
+            LATEST_DEPLOYMENT=$(echo "$RESPONSE" | tr -d '\r\n' | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
 
             STATUS=$LATEST_DEPLOYMENT
 

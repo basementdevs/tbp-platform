@@ -174,10 +174,9 @@ jobs:
       - name: Trigger Deployment on Laravel Forge
         run: |
           curl -X POST \
-            "https://forge.laravel.com/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deploy/http" \
-            --data-urlencode "token=${{ secrets.FORGE_DEPLOY_TOKEN }}" \
+            "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment/deploy" \
+            -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
             --data-urlencode "forge_deploy_branch=${{ github.ref_name }}" \
             --data-urlencode "forge_deploy_commit=${{ github.sha }}" \
             --data-urlencode "forge_deploy_author=${{ github.actor }}" \
-            --data-urlencode "forge_deploy_message=${{ steps.get_commit_message.outputs.message }}" \
-            --data-urlencode "env=${{ vars.DEPLOY_ENV }}"
+            --data-urlencode "forge_deploy_message=${{ steps.get_commit_message.outputs.message }}"

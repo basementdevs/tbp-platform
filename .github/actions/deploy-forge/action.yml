@@ -1,0 +1,39 @@
+name: "Trigger Deployment on Laravel Forge"
+description: "Triggers a deployment on Laravel Forge."
+inputs:
+  forge_server_id:
+    description: "Laravel Forge server ID"
+    required: true
+  forge_site_id:
+    description: "Laravel Forge site ID"
+    required: true
+  forge_api_token:
+    description: "Laravel Forge API token"
+    required: true
+  branch:
+    description: "Branch to deploy"
+    required: true
+  commit_sha:
+    description: "Commit SHA to deploy"
+    required: true
+  commit_message:
+    description: "Commit message"
+    required: true
+  commit_author:
+    description: "Commit author"
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Perform trigger"
+      shell: bash
+      run: |
+        curl -fsSL -X POST \
+          "https://forge.laravel.com/api/v1/servers/${{ inputs.forge_server_id }}/sites/${{ inputs.forge_site_id }}/deployment/deploy" \
+          -H "Authorization: Bearer ${{ inputs.forge_api_token }}" \
+          --data-urlencode "forge_deploy_branch=${{ inputs.branch }}" \
+          --data-urlencode "forge_deploy_commit=${{ inputs.commit_sha }}" \
+          --data-urlencode "forge_deploy_author=${{ inputs.commit_author }}" \
+          --data-urlencode "forge_deploy_message=${{ inputs.commit_message }}" \
+          > /dev/null

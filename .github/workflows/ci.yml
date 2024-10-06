@@ -172,50 +172,19 @@ jobs:
           echo "Commit Hash: ${{ github.sha }}"
           echo "Actor: ${{ github.actor }}"
       - name: Trigger Deployment on Laravel Forge
-        run: |
-          curl -fsSL -X POST \
-            "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment/deploy" \
-            -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
-            --data-urlencode "forge_deploy_branch=${{ github.ref_name }}" \
-            --data-urlencode "forge_deploy_commit=${{ github.sha }}" \
-            --data-urlencode "forge_deploy_author=${{ github.actor }}" \
-            --data-urlencode "forge_deploy_message=${{ steps.get_commit_message.outputs.message }}" \
-            > /dev/null
+        uses: ./.github/actions/deploy-forge
+        with:
+          forge_server_id: ${{ secrets.FORGE_SERVER_ID }}
+          forge_site_id: ${{ secrets.FORGE_SITE_ID }}
+          forge_api_token: ${{ secrets.FORGE_API_TOKEN }}
+          branch: ${{ github.ref_name }}
+          commit_sha: ${{ github.sha }}
+          commit_author: ${{ github.actor }}
+          commit_message: ${{ steps.get_commit_message.outputs.message }}
       - name: Wait for deployment to complete
-        run: |
-          MAX_ATTEMPTS=20
-          ATTEMPT=0
-          STATUS="null"
-          LATEST_COMMIT="${{ github.sha }}"
-
-          while [[ "$STATUS" == "null" || "$STATUS" == "in_progress" || "$STATUS" == "deploying" || "$STATUS" == "queued" ]] && [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
-            echo "Checking deployment status (Attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)..."
-
-            RESPONSE=$(curl -fsSL -X GET \
-              "https://forge.laravel.com/api/v1/servers/${{ secrets.FORGE_SERVER_ID }}/sites/${{ secrets.FORGE_SITE_ID }}/deployment-history" \
-              -H "Authorization: Bearer ${{ secrets.FORGE_API_TOKEN }}" \
-              -H "Accept: application/json")
-
-            LATEST_DEPLOYMENT=$(echo "$RESPONSE" | tr -d '\r\n' | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
-
-            STATUS=$LATEST_DEPLOYMENT
-
-            echo "Current deployment status: $STATUS"
-
-            if [[ "$STATUS" == "finished" ]]; then
-              echo "Deployment completed successfully."
-              exit 0
-            elif [[ "$STATUS" == "failed" ]]; then
-              echo "Deployment failed!"
-              exit 1
-            else
-              echo "Deployment is still in progress..."
-              ATTEMPT=$((ATTEMPT + 1))
-              sleep 15
-            fi
-          done
-
-          if [ $ATTEMPT -ge $MAX_ATTEMPTS ]; then
-            echo "Deployment timed out after $MAX_ATTEMPTS attempts."
-            exit 1
-          fi
+        uses: ./.github/actions/wait-deploy
+        with:
+          forge_server_id: ${{ secrets.FORGE_SERVER_ID }}
+          forge_site_id: ${{ secrets.FORGE_SITE_ID }}
+          forge_api_token: ${{ secrets.FORGE_API_TOKEN }}
+          commit_sha: ${{ github.sha }}

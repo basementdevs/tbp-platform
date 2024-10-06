@@ -1,0 +1,65 @@
+name: "Wait for Laravel Forge Deployment"
+description: "Waits for a deployment on Laravel Forge to complete."
+inputs:
+  forge_server_id:
+    description: "Laravel Forge server ID"
+    required: true
+  forge_site_id:
+    description: "Laravel Forge site ID"
+    required: true
+  forge_api_token:
+    description: "Laravel Forge API token"
+    required: true
+  commit_sha:
+    description: "Commit SHA of the deployment"
+    required: true
+  max_attempts:
+    description: "Maximum number of status check attempts"
+    default: '20'
+  sleep_seconds:
+    description: "Number of seconds to wait between attempts"
+    default: '15'
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Wait for deploy"
+      shell: bash
+      run: |
+        MAX_ATTEMPTS=${{ inputs.max_attempts }}
+        ATTEMPT=0
+        STATUS="null"
+        LATEST_COMMIT="${{ inputs.commit_sha }}"
+        SLEEP_SECONDS=${{ inputs.sleep_seconds }}
+
+        while [[ -z "$STATUS" || "$STATUS" == "null" || "$STATUS" == "in_progress" || "$STATUS" == "deploying" || "$STATUS" == "queued" ]] && [ $ATTEMPT -lt $MAX_ATTEMPTS ]; do
+          echo "Checking deployment status (Attempt $((ATTEMPT+1))/$MAX_ATTEMPTS)..."
+
+          RESPONSE=$(curl -fsSL -X GET \
+            "https://forge.laravel.com/api/v1/servers/${{ inputs.forge_server_id }}/sites/${{ inputs.forge_site_id }}/deployment-history" \
+            -H "Authorization: Bearer ${{ inputs.forge_api_token }}" \
+            -H "Accept: application/json")
+
+          LATEST_DEPLOYMENT=$(echo "$RESPONSE" | tr -d '\r\n' | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
+
+          STATUS=${LATEST_DEPLOYMENT:-"null"}
+
+          echo "Current deployment status: $STATUS"
+
+          if [[ "$STATUS" == "finished" ]]; then
+            echo "Deployment completed successfully."
+            exit 0
+          elif [[ "$STATUS" == "failed" ]]; then
+            echo "Deployment failed!"
+            exit 1
+          else
+            echo "Deployment is still in progress..."
+            ATTEMPT=$((ATTEMPT + 1))
+            sleep $SLEEP_SECONDS
+          fi
+        done
+
+        if [ $ATTEMPT -ge $MAX_ATTEMPTS ]; then
+          echo "Deployment timed out after $MAX_ATTEMPTS attempts."
+          exit 1
+        fi

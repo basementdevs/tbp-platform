@@ -176,7 +176,7 @@ jobs:
         with:
           forge_server_id: ${{ secrets.FORGE_SERVER_ID }}
           forge_site_id: ${{ secrets.FORGE_SITE_ID }}
-          forge_api_token: ${{ secrets.FORGE_API_TOKEN }}
+          forge_api_token: ${{ secrets.FORGE_DEPLOY_TOKEN }}
           branch: ${{ github.ref_name }}
           commit_sha: ${{ github.sha }}
           commit_author: ${{ github.actor }}

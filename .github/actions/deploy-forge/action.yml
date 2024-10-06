@@ -30,8 +30,8 @@ runs:
       shell: bash
       run: |
         curl -fsSL -X POST \
-          "https://forge.laravel.com/api/v1/servers/${{ inputs.forge_server_id }}/sites/${{ inputs.forge_site_id }}/deployment/deploy" \
-          -H "Authorization: Bearer ${{ inputs.forge_api_token }}" \
+          "https://forge.laravel.com/servers/${{ inputs.forge_server_id }}/sites/${{ inputs.forge_site_id }}/deploy/http" \
+          --data-urlencode "token=${{ inputs.forge_api_token }}" \
           --data-urlencode "forge_deploy_branch=${{ inputs.branch }}" \
           --data-urlencode "forge_deploy_commit=${{ inputs.commit_sha }}" \
           --data-urlencode "forge_deploy_author=${{ inputs.commit_author }}" \

@@ -49,10 +49,14 @@ jobs:
           fi
 
           if git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
-            echo "new_tag=false" >> "$GITHUB_OUTPUT"
+            NEW_TAG=false
           else
-            echo "new_tag=true" >> "$GITHUB_OUTPUT"
+            NEW_TAG=true
           fi
+
+          echo "The new tag is: $NEW_TAG"
+
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
 
           echo "************************"
   update_main:
@@ -78,7 +82,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-24.04
     needs: update_main
-    if: ${{ needs.update_main.outputs.new_tag == 'true' }}
+    if: ${{ needs.prepare_pipeline.outputs.new_tag == 'true' }}
     permissions:
       contents: write
     steps:
@@ -97,7 +101,7 @@ jobs:
             --target main \
             --generate-notes
   deploy:
-    name: Deploy PROD - ${{ env.PREFIXED_VERSION_TAG }}
+    name: Deploy PROD
     runs-on: ubuntu-24.04
     needs: create_release
     if: ${{ always() }}
@@ -139,7 +143,7 @@ jobs:
           forge_server_id: ${{ secrets.FORGE_SERVER_ID }}
           forge_site_id: ${{ secrets.FORGE_SITE_ID }}
           forge_api_token: ${{ secrets.FORGE_DEPLOY_TOKEN }}
-          branch: ${{ steps.release.outputs.main }}
+          branch: ${{ steps.release.outputs.release_branch }}
           commit_sha: ${{ steps.release.outputs.release_sha }}
           commit_author: ${{ github.actor }}
           commit_message: ${{ steps.release.outputs.release_title }}

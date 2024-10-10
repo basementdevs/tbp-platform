@@ -1,0 +1,156 @@
+name: Release Prod
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_tag:
+        description: "Version tag"
+        type: string
+        required: true
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.inputs.version_tag }}
+  cancel-in-progress: true
+
+env:
+  VERSION_TAG: ${{ github.event.inputs.version_tag }}
+  PREFIXED_VERSION_TAG: v${{ github.event.inputs.version_tag }}
+
+jobs:
+  prepare_pipeline:
+    name: Prepare Pipeline
+    runs-on: ubuntu-24.04
+    outputs:
+      new_tag: ${{ steps.validated.outputs.new_tag }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Validate Inputs
+        id: validated
+        run: |
+          tag="${{ env.VERSION_TAG }}"
+
+          echo "*** Github Context ***"
+          echo "Ref: ${{ github.ref }}"
+          echo "Event: ${{ github.event_name }}"
+          echo "Tag: $tag"
+
+          if [ "${{ github.ref }}" != "refs/heads/develop" ]; then
+            echo "Error: This workflow must be triggered from the 'develop' branch but is triggered from '${{ github.ref_name }}'."
+            exit 1
+          fi
+
+          if ! [[ "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Error: The provided version tag '$tag' is not in semantic version format (x.x.x)."
+            exit 1
+          fi
+
+          if git ls-remote --tags origin | grep -q "refs/tags/$tag"; then
+            NEW_TAG=false
+          else
+            NEW_TAG=true
+          fi
+
+          echo "The new tag is: $NEW_TAG"
+
+          echo "new_tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+
+          echo "************************"
+  update_main:
+    name: Update production branch
+    runs-on: ubuntu-24.04
+    needs: prepare_pipeline
+    if: needs.prepare_pipeline.outputs.new_tag == 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Update Main Branch
+        run: |
+          git checkout main
+          git pull origin main
+          git pull origin develop --ff-only
+          git push origin main
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-24.04
+    needs: update_main
+    if: needs.prepare_pipeline.outputs.new_tag == 'true'
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Create Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "${{ env.VERSION_TAG }}" \
+            --title "${{ env.VERSION_TAG }}" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target main \
+            --generate-notes
+  deploy:
+    name: Deploy PROD
+    runs-on: ubuntu-24.04
+    needs: create_release
+    if: ${{ always() }}
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@d632683dd7b4114ad314bca15554477dd762a938 # v4.2.0
+        with:
+          ref: ${{ needs.prepare_pipeline.outputs.new_tag == 'true' && 'main' || env.VERSION_TAG }}
+          fetch-depth: 0
+      - name: Get release context
+        id: release
+        run: |
+          echo "release_title=Release ${{ env.PREFIXED_VERSION_TAG }}" >> "$GITHUB_OUTPUT"
+          echo "release_branch=main" >> "$GITHUB_OUTPUT"
+
+          git fetch --all --tags
+
+          if [ "${{ needs.prepare_pipeline.outputs.new_tag }}" == "true" ]; then
+            echo "New tag is true, using the main branch."
+            RELEASE_COMMIT_SHA=$(git rev-parse origin/main)
+          else
+            echo "New tag is false, using the previous tag: ${{ env.VERSION_TAG }}"
+            RELEASE_COMMIT_SHA=$(git rev-parse refs/tags/${{ env.VERSION_TAG }})
+          fi
+
+          echo "release_sha=$RELEASE_COMMIT_SHA" >> "$GITHUB_OUTPUT"
+
+      - name: Print GitHub Context
+        run: |
+          echo "### GitHub Context ###"
+          echo "Event Name: ${{ github.event_name }}"
+          echo "Commit title: ${{ steps.release.outputs.release_title }}"
+          echo "Commit Hash: ${{ steps.release.outputs.release_sha }}"
+          echo "Actor: ${{ github.actor }}"
+      - name: Trigger Deployment on Laravel Forge
+        uses: ./.github/actions/deploy-forge
+        with:
+          forge_server_id: ${{ secrets.FORGE_SERVER_ID }}
+          forge_site_id: ${{ secrets.FORGE_SITE_ID }}
+          forge_api_token: ${{ secrets.FORGE_DEPLOY_TOKEN }}
+          branch: ${{ steps.release.outputs.release_branch }}
+          commit_sha: ${{ steps.release.outputs.release_sha }}
+          commit_author: ${{ github.actor }}
+          commit_message: ${{ steps.release.outputs.release_title }}
+      - name: Wait for deployment to complete
+        uses: ./.github/actions/wait-deploy
+        with:
+          forge_server_id: ${{ secrets.FORGE_SERVER_ID }}
+          forge_site_id: ${{ secrets.FORGE_SITE_ID }}
+          forge_api_token: ${{ secrets.FORGE_API_TOKEN }}
+          commit_sha: ${{ steps.release.outputs.release_sha }}

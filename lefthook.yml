@@ -22,10 +22,6 @@ pre-push:
     audit:
       tags: security
       run: composer audit --no-dev
-    lint:
-      tags: linting
-      glob: "*.{php}"
-      run: ./vendor/bin/phpcs --standard=PSR12 {push_files}
     tests:
       tags: testing
       run: ./vendor/bin/phpunit --stop-on-failure

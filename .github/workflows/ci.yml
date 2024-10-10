@@ -83,30 +83,6 @@ jobs:
       - name: Run Pint
         run: ./vendor/bin/pint --no-interaction --test --preset=laravel
 
-  lint:
-    name: Perform PHP_CodeSniffer Lint
-    runs-on: ubuntu-24.04
-    needs: setup
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
-
-      - name: Setup PHP
-        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
-        with:
-          php-version: ${{ env.PHP_VERSION }}
-          extensions: ${{ env.PHP_EXTENSIONS }}
-          ini-values: ${{ env.PHP_INI_PROPERTIES }}
-
-      - name: Install composer dependencies
-        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
-        with:
-          composer-options: "--optimize-autoloader --prefer-dist"
-          custom-cache-key: ${{ needs.setup.outputs.combined-key }}
-
-      - name: Run PHP_CodeSniffer
-        run: ./vendor/bin/phpcs --standard=PSR12 app/ routes/ database/factories/ database/seeders/ tests/
-
   tests:
     name: Run tests
     runs-on: ubuntu-24.04
@@ -198,7 +174,6 @@ jobs:
     environment: ${{ github.ref_name == 'develop' && 'develop' || github.ref_name == 'main' && 'production' || null }}
     needs:
       - tests
-      - lint
       - format
     steps:
       - name: Checkout code

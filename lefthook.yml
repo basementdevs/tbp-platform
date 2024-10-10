@@ -8,6 +8,10 @@ pre-commit:
     format:
       tags: formatting
       run: ./vendor/bin/pint --no-interaction --test --preset=laravel {staged_files}
+    lint:
+      tags: linting
+      glob: "*.{php}"
+      run: ./vendor/bin/phpcs --standard=PSR12 {staged_files}
 
 pre-push:
   parallel: false
@@ -18,3 +22,10 @@ pre-push:
     audit:
       tags: security
       run: composer audit --no-dev
+    lint:
+      tags: linting
+      glob: "*.{php}"
+      run: ./vendor/bin/phpcs --standard=PSR12 {push_files}
+    tests:
+      tags: testing
+      run: ./vendor/bin/phpunit --stop-on-failure

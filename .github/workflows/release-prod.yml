@@ -63,7 +63,7 @@ jobs:
     name: Update production branch
     runs-on: ubuntu-24.04
     needs: prepare_pipeline
-    if: ${{ needs.prepare_pipeline.outputs.new_tag == 'true' }}
+    if: needs.prepare_pipeline.outputs.new_tag == 'true'
     permissions:
       contents: write
     steps:
@@ -82,7 +82,7 @@ jobs:
     name: Create Release
     runs-on: ubuntu-24.04
     needs: update_main
-    if: ${{ needs.prepare_pipeline.outputs.new_tag == 'true' }}
+    if: needs.prepare_pipeline.outputs.new_tag == 'true'
     permissions:
       contents: write
     steps:

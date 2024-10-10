@@ -35,6 +35,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+
       - name: Prepare environment and composer data
         id: prepare-env
         run: |
@@ -44,37 +45,68 @@ jobs:
           arch_lower=$(echo ${{ runner.arch }} | tr '[:upper:]' '[:lower:]')
           combined_key="${os_lower}-${arch_lower}-composer-${composer_hash}"
           echo "combined-key=${combined_key}" >> "$GITHUB_OUTPUT"
+
       - name: Setup PHP
         uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           ini-values: ${{ env.PHP_INI_PROPERTIES }}
+
       - name: Install composer dependencies
         uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
         with:
           composer-options: "--optimize-autoloader --prefer-dist"
           custom-cache-key: ${{ steps.prepare-env.outputs.combined-key }}
-  lint:
-    name: Perform lint
+
+  format:
+    name: Perform Pint format
     runs-on: ubuntu-24.04
     needs: setup
     steps:
       - name: Checkout code
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+
       - name: Setup PHP
         uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
         with:
           php-version: ${{ env.PHP_VERSION }}
           extensions: ${{ env.PHP_EXTENSIONS }}
           ini-values: ${{ env.PHP_INI_PROPERTIES }}
+
       - name: Install composer dependencies
         uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
         with:
           composer-options: "--optimize-autoloader --prefer-dist"
           custom-cache-key: ${{ needs.setup.outputs.combined-key }}
+
       - name: Run Pint
         run: ./vendor/bin/pint --no-interaction --test --preset=laravel
+
+  lint:
+    name: Perform PHP_CodeSniffer Lint
+    runs-on: ubuntu-24.04
+    needs: setup
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          ini-values: ${{ env.PHP_INI_PROPERTIES }}
+
+      - name: Install composer dependencies
+        uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
+        with:
+          composer-options: "--optimize-autoloader --prefer-dist"
+          custom-cache-key: ${{ needs.setup.outputs.combined-key }}
+
+      - name: Run PHP_CodeSniffer
+        run: ./vendor/bin/phpcs --standard=PSR12 app/ routes/ database/factories/ database/seeders/ tests/
+
   tests:
     name: Run tests
     runs-on: ubuntu-24.04
@@ -103,6 +135,7 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+
       redis:
         image: redis
         ports:
@@ -115,6 +148,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+
       - name: Setup PHP
         uses: shivammathur/setup-php@c541c155eee45413f5b09a52248675b1a2575231 # v2.31.1
         with:
@@ -122,47 +156,59 @@ jobs:
           extensions: ${{ env.PHP_EXTENSIONS }}
           ini-values: ${{ env.PHP_INI_PROPERTIES }}
           coverage: "xdebug"
+
       - name: Install composer dependencies
         uses: ramsey/composer-install@57532f8be5bda426838819c5ee9afb8af389d51a # v3.0.0
         with:
           composer-options: "--optimize-autoloader --prefer-dist"
           custom-cache-key: ${{ needs.setup.outputs.combined-key }}
+
       - name: Prepare the application
         run: |
           php -r "file_exists('.env') || copy('.env.example', '.env');"
           php artisan config:clear
           php artisan key:generate
+
       - name: Run Migration
         run: php artisan migrate --seed -v
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+
       - name: Run tests
         run: php artisan test
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+
       - name: Run coverage tests
-        if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.coverage == 'true' }}
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.coverage == 'true'
         run: php artisan test --coverage --min=90
         env:
           DB_PORT: ${{ job.services.postgres.ports['5432'] }}
           REDIS_PORT: ${{ job.services.redis.ports['6379'] }}
+
   deploy:
     name: Deploy on Forge
-    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.actor != 'dependabot[bot]' && github.actor != 'dependabot-preview[bot]' }}
+    if: >
+      (github.event_name == 'push' || github.event_name == 'workflow_dispatch') &&
+        github.actor != 'dependabot[bot]' &&
+        github.actor != 'dependabot-preview[bot]'
     runs-on: ubuntu-24.04
     environment: ${{ github.ref_name == 'develop' && 'develop' || github.ref_name == 'main' && 'production' || null }}
     needs:
       - tests
       - lint
+      - format
     steps:
       - name: Checkout code
         uses: actions/checkout@eef61447b9ff4aafe5dcd4e0bbf5d482be7e7871 # v4.2.1
+
       - name: Get the latest commit message
         id: get_commit_message
         run: |
           echo "message=$(git log -1 --pretty=%s)" >> "$GITHUB_OUTPUT"
+
       - name: Print GitHub Context
         run: |
           echo "### GitHub Context ###"
@@ -171,6 +217,7 @@ jobs:
           echo "Commit title: ${{ steps.get_commit_message.outputs.message }}"
           echo "Commit Hash: ${{ github.sha }}"
           echo "Actor: ${{ github.actor }}"
+
       - name: Trigger Deployment on Laravel Forge
         uses: ./.github/actions/deploy-forge
         with:
@@ -181,6 +228,7 @@ jobs:
           commit_sha: ${{ github.sha }}
           commit_author: ${{ github.actor }}
           commit_message: ${{ steps.get_commit_message.outputs.message }}
+
       - name: Wait for deployment to complete
         uses: ./.github/actions/wait-deploy
         with:

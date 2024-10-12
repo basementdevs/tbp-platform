@@ -40,7 +40,7 @@ runs:
             -H "Authorization: Bearer ${{ inputs.forge_api_token }}" \
             -H "Accept: application/json")
 
-          LATEST_DEPLOYMENT=$(echo "$RESPONSE" | tr -d '\r\n' | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments[] | select(.commit_hash == $LATEST_COMMIT) | .status')
+          LATEST_DEPLOYMENT=$(echo "$RESPONSE" | tr -d '\r\n' | jq -r --arg LATEST_COMMIT "$LATEST_COMMIT" '.deployments | map(select(.commit_hash == $LATEST_COMMIT)) | sort_by(.started_at) | last | .status')
 
           STATUS=${LATEST_DEPLOYMENT:-"null"}
 

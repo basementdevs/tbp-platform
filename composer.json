@@ -11,7 +11,7 @@
         "php": "~8.3.0",
         "abdelhamiderrahmouni/filament-monaco-editor": "0.2.5",
         "chrisreedio/socialment": "3.9.1",
-        "filament/filament": "3.2.115",
+        "filament/filament": "3.2.117",
         "jeffgreco13/filament-breezy": "2.4.5",
         "laravel/framework": "11.26.0",
         "laravel/sanctum": "4.0.3",

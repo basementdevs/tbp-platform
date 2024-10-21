@@ -13,7 +13,7 @@
         "chrisreedio/socialment": "3.9.1",
         "filament/filament": "3.2.115",
         "jeffgreco13/filament-breezy": "2.4.5",
-        "laravel/framework": "11.26.0",
+        "laravel/framework": "11.28.1",
         "laravel/sanctum": "4.0.3",
         "laravel/socialite": "5.16.0",
         "laravel/tinker": "2.10.0",

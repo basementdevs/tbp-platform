@@ -15,7 +15,7 @@ class Occupation extends Model
 
     public function getImageUrlAttribute(): string
     {
-        return sprintf('https://twitch-extension.danielheart.dev/static/icons/%s.png', $this->slug);
+        return sprintf('%s/static/icons/%s.png', config('services.consumer-api.base_uri'), $this->slug);
     }
 
     protected $appends = [

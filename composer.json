@@ -17,7 +17,7 @@
         "laravel/sanctum": "4.0.3",
         "laravel/socialite": "5.16.0",
         "laravel/tinker": "2.10.0",
-        "predis/predis": "2.2.2",
+        "predis/predis": "2.3.0",
         "socialiteproviders/twitch": "5.4.0"
     },
     "require-dev": {

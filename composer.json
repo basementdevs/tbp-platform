@@ -14,7 +14,7 @@
         "filament/filament": "3.2.124",
         "jeffgreco13/filament-breezy": "2.4.5",
         "laravel/framework": "11.33.2",
-        "laravel/sanctum": "4.0.3",
+        "laravel/sanctum": "4.0.4",
         "laravel/socialite": "5.16.0",
         "laravel/tinker": "2.10.0",
         "predis/predis": "2.2.2",

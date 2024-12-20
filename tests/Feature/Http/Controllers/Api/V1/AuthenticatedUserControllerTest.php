@@ -16,7 +16,7 @@ class AuthenticatedUserControllerTest extends TestCase
 {
     use RefreshDatabase;
 
-    public function testPutSettings()
+    public function test_put_settings()
     {
         // Arrange
 
@@ -75,7 +75,7 @@ class AuthenticatedUserControllerTest extends TestCase
     }
 
     #[DataProvider('settingsDataProvider')]
-    public function testGetSettings(?string $payload, int $count)
+    public function test_get_settings(?string $payload, int $count)
     {
         // Arrange
         $user = User::factory()->create();

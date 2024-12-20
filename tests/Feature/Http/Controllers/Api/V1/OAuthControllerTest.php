@@ -70,6 +70,5 @@ class OAuthControllerTest extends TestCase
                     ],
                 ],
             ]);
-
     }
 }

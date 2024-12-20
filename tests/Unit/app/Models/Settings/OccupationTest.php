@@ -8,7 +8,7 @@ use Tests\TestCase;
 
 class OccupationTest extends TestCase
 {
-    public function testOccupationCanBeCreated()
+    public function test_occupation_can_be_created()
     {
         Occupation::factory()->create([
             'name' => 'Developer',
@@ -23,7 +23,7 @@ class OccupationTest extends TestCase
         ]);
     }
 
-    public function testImageUrlAttribute()
+    public function test_image_url_attribute()
     {
         $occupation = Occupation::factory()->create([
             'slug' => 'developer',
@@ -34,7 +34,7 @@ class OccupationTest extends TestCase
         $this->assertEquals($expectedUrl, $occupation->image_url);
     }
 
-    public function testOccupationHasManySettings()
+    public function test_occupation_has_many_settings()
     {
         $occupation = Occupation::factory()->create();
         $settings = Settings::factory()->create(['occupation_id' => $occupation->id]);

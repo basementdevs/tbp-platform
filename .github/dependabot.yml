@@ -5,23 +5,58 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    pull-request-branch-name:
+      separator: _
     ignore:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    groups:
+      prod:
+        dependency-type: production
+        patterns:
+          - "*"
+      dev:
+        dependency-type: development
+        patterns:
+          - "*"
+
   - package-ecosystem: "composer"
     directory: "/"
     schedule:
       interval: "weekly"
+    pull-request-branch-name:
+      separator: _
     ignore:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    groups:
+      prod:
+        dependency-type: production
+        patterns:
+          - "*"
+      dev:
+        dependency-type: development
+        patterns:
+          - "*"
+
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    pull-request-branch-name:
+      separator: _
     ignore:
       - dependency-name: "*"
         update-types:
           - "version-update:semver-major"
+    groups:
+      prod:
+        dependency-type: production
+        patterns:
+          - "*"
+      dev:
+        dependency-type: development
+        patterns:
+          - "*"

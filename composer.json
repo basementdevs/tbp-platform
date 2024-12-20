@@ -11,13 +11,13 @@
         "php": "~8.3.0",
         "abdelhamiderrahmouni/filament-monaco-editor": "0.2.5",
         "chrisreedio/socialment": "3.9.1",
-        "filament/filament": "3.2.124",
+        "filament/filament": "3.2.131",
         "jeffgreco13/filament-breezy": "2.4.5",
-        "laravel/framework": "11.33.2",
-        "laravel/sanctum": "4.0.3",
-        "laravel/socialite": "5.16.0",
+        "laravel/framework": "11.36.1",
+        "laravel/sanctum": "4.0.7",
+        "laravel/socialite": "5.16.1",
         "laravel/tinker": "2.10.0",
-        "predis/predis": "2.2.2",
+        "predis/predis": "2.3.0",
         "socialiteproviders/twitch": "5.4.0"
     },
     "require-dev": {

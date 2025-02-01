@@ -13,6 +13,7 @@ updates:
           - "version-update:semver-major"
 
   - package-ecosystem: "composer"
+    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
@@ -33,6 +34,7 @@ updates:
           - "*"
 
   - package-ecosystem: "npm"
+    open-pull-requests-limit: 0
     directory: "/"
     schedule:
       interval: "weekly"
